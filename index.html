@@ -1,1723 +1,2072 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ADIL IMAGE ADJUST STUDIO</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg: #0a0a0c;
-  --bg2: #0e0e10;
-  --bg3: #121214;
-  --gold: #c8a96e;
-  --gold2: #e8c99a;
-  --gold3: #f5deb3;
-  --gold-dim: rgba(200,169,110,0.15);
-  --gold-glow: rgba(200,169,110,0.3);
-  --glass-bg: rgba(20,20,20,0.6);
-  --border: rgba(200,169,110,0.15);
-  --border2: rgba(200,169,110,0.25);
-  --text: #e8e0d0;
-  --text-dim: #9a8a6a;
-  --text-muted: #5a5045;
-  --red: #e05050;
-  --green: #50c070;
-  --cyan: #50b8d8;
+/* ── CSS VARIABLES / THEMES ── */
+:root{
+  --bg-primary:#0e0e10;
+  --bg-secondary:#161618;
+  --bg-card:#1a1a1d;
+  --bg-glass:rgba(26,26,29,0.85);
+  --border-color:rgba(200,169,110,0.25);
+  --border-glow:rgba(200,169,110,0.55);
+  --accent:#c8a96e;
+  --accent-dim:rgba(200,169,110,0.15);
+  --accent-hover:#e2c98e;
+  --text-primary:#f0e6d3;
+  --text-secondary:#a89070;
+  --text-muted:#5a4e3e;
+  --toggle-on:#c8a96e;
+  --toggle-track:#2a2825;
+  --slider-thumb:#c8a96e;
+  --shadow-card:0 8px 32px rgba(0,0,0,0.55),0 2px 8px rgba(200,169,110,0.06);
+  --shadow-glow:0 0 24px rgba(200,169,110,0.15);
+  --radius:14px;
+  --radius-sm:8px;
 }
+[data-theme="platinum"]{
+  --bg-primary:#08090b;
+  --bg-secondary:#0f1013;
+  --bg-card:#13141a;
+  --bg-glass:rgba(19,20,26,0.9);
+  --border-color:rgba(200,210,230,0.2);
+  --border-glow:rgba(220,230,250,0.5);
+  --accent:#d0d8f0;
+  --accent-dim:rgba(200,210,230,0.1);
+  --accent-hover:#eef2ff;
+  --text-primary:#e8edf8;
+  --text-secondary:#8892a8;
+  --text-muted:#3a4055;
+  --toggle-on:#c0caee;
+  --toggle-track:#1e2235;
+  --slider-thumb:#c0caee;
+  --shadow-card:0 8px 32px rgba(0,0,0,0.65),0 2px 8px rgba(160,180,230,0.06);
+  --shadow-glow:0 0 24px rgba(180,200,250,0.12);
+}
+[data-theme="rose"]{
+  --bg-primary:#0d0a0e;
+  --bg-secondary:#150f14;
+  --bg-card:#1c1218;
+  --bg-glass:rgba(28,18,24,0.88);
+  --border-color:rgba(200,130,140,0.22);
+  --border-glow:rgba(210,140,150,0.5);
+  --accent:#d4847a;
+  --accent-dim:rgba(200,130,140,0.12);
+  --accent-hover:#f0a098;
+  --text-primary:#f0dde0;
+  --text-secondary:#a07878;
+  --text-muted:#4e3038;
+  --toggle-on:#d4847a;
+  --toggle-track:#2a1820;
+  --slider-thumb:#d4847a;
+  --shadow-card:0 8px 32px rgba(0,0,0,0.6),0 2px 8px rgba(200,100,110,0.07);
+  --shadow-glow:0 0 24px rgba(200,100,120,0.14);
+}
+
+/* ── RESET & BASE ── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{
-  background:var(--bg);
-  color:var(--text);
   font-family:'Rajdhani',sans-serif;
-  font-size:15px;
-  font-weight:500;
+  background:var(--bg-primary);
+  color:var(--text-primary);
   min-height:100vh;
   overflow-x:hidden;
+  line-height:1.5;
 }
 body::before{
   content:'';
   position:fixed;inset:0;
   background:
-    radial-gradient(ellipse 80% 60% at 10% 20%, rgba(200,169,110,0.04) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 80% at 90% 80%, rgba(200,169,110,0.03) 0%, transparent 60%);
+    radial-gradient(ellipse 80% 50% at 20% 10%, rgba(200,169,110,0.04) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 80%, rgba(200,169,110,0.03) 0%, transparent 50%);
   pointer-events:none;z-index:0;
+  transition:background 0.5s;
+}
+[data-theme="platinum"] body::before{
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 10%, rgba(160,180,240,0.04) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 80%, rgba(160,180,240,0.03) 0%, transparent 50%);
+}
+[data-theme="rose"] body::before{
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 10%, rgba(210,100,120,0.04) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 80%, rgba(200,80,110,0.03) 0%, transparent 50%);
 }
 
-/* SCROLLBAR */
+/* ── SCROLLBAR ── */
 ::-webkit-scrollbar{width:5px;height:5px}
-::-webkit-scrollbar-track{background:#0a0a0c}
-::-webkit-scrollbar-thumb{background:var(--gold-glow);border-radius:3px}
+::-webkit-scrollbar-track{background:var(--bg-secondary)}
+::-webkit-scrollbar-thumb{background:var(--accent);border-radius:10px}
 
-/* HEADER */
+/* ── LAYOUT ── */
+#app{position:relative;z-index:1;display:flex;flex-direction:column;min-height:100vh}
+
+/* ── HEADER ── */
 header{
+  background:var(--bg-glass);
+  backdrop-filter:blur(20px) saturate(160%);
+  -webkit-backdrop-filter:blur(20px) saturate(160%);
+  border-bottom:1px solid var(--border-color);
+  padding:18px 32px 14px;
   position:sticky;top:0;z-index:100;
-  background:rgba(10,10,12,0.92);
-  backdrop-filter:blur(20px) saturate(180%);
-  border-bottom:1px solid var(--border2);
-  padding:14px 28px 12px;
-  text-align:center;
+  transition:background 0.4s,border-color 0.4s;
 }
-.brand-name{
-  font-family:'Bebas Neue',sans-serif;
-  font-size:clamp(1.8rem,4vw,3rem);
-  letter-spacing:0.18em;
-  background:linear-gradient(135deg,var(--gold) 0%,var(--gold3) 50%,var(--gold) 100%);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-  text-shadow:none;
-  line-height:1;
+.header-inner{
+  max-width:1600px;margin:0 auto;
+  display:flex;align-items:flex-start;justify-content:space-between;gap:16px;
 }
-.tool-labels{
-  margin-top:6px;
+.brand-block{}
+.brand-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(1.4rem,3vw,2.1rem);
+  font-weight:700;letter-spacing:0.12em;
+  color:var(--accent);
+  text-shadow:0 0 30px rgba(200,169,110,0.3);
+  transition:color 0.4s,text-shadow 0.4s;
+  line-height:1.1;
+}
+.brand-tagline{
+  display:flex;flex-wrap:wrap;gap:3px 1px;
+  margin-top:5px;font-size:0.68rem;
   font-family:'JetBrains Mono',monospace;
+  letter-spacing:0.05em;line-height:1.8;
+}
+.tag-item{
+  display:inline-block;
+  padding:1px 6px;
+  border-radius:3px;
+  border:1px solid;
   font-size:0.62rem;
-  font-weight:300;
-  letter-spacing:0.08em;
-  line-height:1.8;
-  display:flex;flex-wrap:wrap;justify-content:center;gap:2px 0;
+  font-weight:500;
+  letter-spacing:0.06em;
+  transition:all 0.3s;
 }
-.tl{padding:0 6px;white-space:nowrap}
-.tl-sep{color:var(--text-muted);padding:0 2px}
-.tl1{color:#d4a843}.tl2{color:#b8c4a0}.tl3{color:#a8b8d0}.tl4{color:#c4a870}
-.tl5{color:#90b8a0}.tl6{color:#d0b060}.tl7{color:#a0b4c8}.tl8{color:#c8a050}
-.tl9{color:#88c0a8}.tl10{color:#b8a888}.tl11{color:#d8c888}
+.tag-1{color:#c8a96e;border-color:rgba(200,169,110,0.3);background:rgba(200,169,110,0.05)}
+.tag-2{color:#b8c4d8;border-color:rgba(184,196,216,0.3);background:rgba(184,196,216,0.05)}
+.tag-3{color:#d4c4a0;border-color:rgba(212,196,160,0.3);background:rgba(212,196,160,0.05)}
+.tag-4{color:#a8d4b8;border-color:rgba(168,212,184,0.3);background:rgba(168,212,184,0.05)}
+.tag-5{color:#d4a8a8;border-color:rgba(212,168,168,0.3);background:rgba(212,168,168,0.05)}
+.tag-6{color:#c4b8d8;border-color:rgba(196,184,216,0.3);background:rgba(196,184,216,0.05)}
+.tag-7{color:#d8c4a0;border-color:rgba(216,196,160,0.3);background:rgba(216,196,160,0.05)}
+.tag-8{color:#a8c4d8;border-color:rgba(168,196,216,0.3);background:rgba(168,196,216,0.05)}
+.tag-9{color:#d8b8a8;border-color:rgba(216,184,168,0.3);background:rgba(216,184,168,0.05)}
+.tag-dot{color:var(--text-muted);padding:0 2px;font-size:0.7rem;align-self:center}
 
-/* MAIN LAYOUT */
-.main-wrap{
-  display:grid;
-  grid-template-columns:1fr 340px;
-  gap:0;
-  min-height:calc(100vh - 90px);
-  position:relative;z-index:1;
-}
+.header-controls{display:flex;align-items:center;gap:12px;flex-shrink:0;margin-top:2px}
 
-/* LEFT PANEL */
-.left-panel{
-  padding:20px;
-  border-right:1px solid var(--border);
-  overflow-y:auto;
-  max-height:calc(100vh - 90px);
-}
-
-/* RIGHT PANEL */
-.right-panel{
-  padding:20px;
-  background:rgba(12,12,14,0.8);
-  overflow-y:auto;
-  max-height:calc(100vh - 90px);
-  position:sticky;top:90px;
-}
-
-/* UPLOAD ZONE */
-.upload-zone{
-  border:1.5px dashed rgba(200,169,110,0.35);
-  border-radius:12px;
-  padding:40px 20px;
-  text-align:center;
-  cursor:pointer;
-  transition:all 0.25s ease;
-  background:rgba(200,169,110,0.03);
-  margin-bottom:20px;
+/* Theme toggle */
+.theme-toggle-btn{
   position:relative;
-}
-.upload-zone:hover,.upload-zone.dragover{
-  border-color:var(--gold);
-  background:rgba(200,169,110,0.07);
-  box-shadow:0 0 20px var(--gold-dim);
-}
-.upload-icon{font-size:2.5rem;display:block;margin-bottom:10px;opacity:0.7}
-.upload-zone h3{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:0.1em;color:var(--gold2)}
-.upload-zone p{font-size:0.8rem;color:var(--text-dim);margin-top:4px}
-#fileInput,#bulkInput{display:none}
-
-/* GLASS PANEL */
-.glass-panel{
-  backdrop-filter:blur(16px) saturate(180%);
-  background:var(--glass-bg);
-  border:1px solid var(--border);
-  border-radius:12px;
-  margin-bottom:14px;
-  overflow:hidden;
-  transition:border-color 0.2s;
-}
-.glass-panel.active{border-color:rgba(200,169,110,0.35)}
-
-/* PANEL HEADER */
-.panel-hdr{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:11px 16px;
-  cursor:pointer;
-  user-select:none;
-  border-bottom:1px solid transparent;
-  transition:border-color 0.2s;
-}
-.glass-panel.active .panel-hdr{border-color:var(--border)}
-.panel-title{
-  display:flex;align-items:center;gap:10px;
-  font-family:'Bebas Neue',sans-serif;
-  font-size:1rem;letter-spacing:0.12em;color:var(--gold2);
-}
-.panel-icon{font-size:1rem;opacity:0.8}
-.panel-body{
-  padding:14px 16px;
-  display:none;
-}
-.glass-panel.active .panel-body{display:block}
-
-/* TOGGLE SWITCH */
-.toggle-wrap{display:flex;align-items:center;gap:8px}
-.toggle-label{font-size:0.72rem;font-family:'JetBrains Mono',monospace;color:var(--text-dim);letter-spacing:0.05em}
-.toggle{
-  position:relative;width:44px;height:22px;flex-shrink:0;
-}
-.toggle input{opacity:0;width:0;height:0;position:absolute}
-.toggle-slider{
-  position:absolute;inset:0;cursor:pointer;
-  background:rgba(255,255,255,0.08);
-  border:1px solid rgba(255,255,255,0.12);
-  border-radius:22px;
-  transition:all 0.25s ease;
-}
-.toggle-slider::before{
-  content:'';position:absolute;
-  width:16px;height:16px;
-  left:2px;bottom:2px;
-  background:var(--text-muted);
-  border-radius:50%;
-  transition:all 0.25s ease;
-  box-shadow:0 2px 4px rgba(0,0,0,0.4);
-}
-.toggle input:checked + .toggle-slider{
-  background:linear-gradient(135deg,rgba(200,169,110,0.3),rgba(200,169,110,0.15));
-  border-color:var(--gold);
-  box-shadow:0 0 10px var(--gold-dim);
-}
-.toggle input:checked + .toggle-slider::before{
-  transform:translateX(22px);
-  background:var(--gold);
-  box-shadow:0 0 8px var(--gold-glow);
-}
-
-/* FORM ELEMENTS */
-.row{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
-.row:last-child{margin-bottom:0}
-.label{font-size:0.78rem;font-family:'JetBrains Mono',monospace;color:var(--text-dim);min-width:90px;flex-shrink:0}
-input[type=number],input[type=text],select{
-  background:rgba(255,255,255,0.05);
-  border:1px solid rgba(200,169,110,0.2);
-  border-radius:6px;
-  color:var(--text);
-  font-family:'JetBrains Mono',monospace;
-  font-size:0.8rem;
-  padding:6px 10px;
-  outline:none;
-  transition:border-color 0.2s,box-shadow 0.2s;
-  width:100%;
-}
-input[type=number]:focus,input[type=text]:focus,select:focus{
-  border-color:var(--gold);
-  box-shadow:0 0 0 2px var(--gold-dim);
-}
-select option{background:#1a1a1c;color:var(--text)}
-input[type=range]{
-  -webkit-appearance:none;appearance:none;
-  width:100%;height:4px;
-  background:rgba(255,255,255,0.1);
-  border-radius:2px;outline:none;cursor:pointer;
-}
-input[type=range]::-webkit-slider-thumb{
-  -webkit-appearance:none;
-  width:14px;height:14px;
-  background:var(--gold);
-  border-radius:50%;
-  box-shadow:0 0 6px var(--gold-glow);
-  transition:transform 0.15s;
-}
-input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2)}
-input[type=range]::-webkit-slider-runnable-track{
-  background:linear-gradient(to right,var(--gold) 0%,var(--gold) var(--val,50%),rgba(255,255,255,0.1) var(--val,50%));
-  height:4px;border-radius:2px;
-}
-.slider-wrap{flex:1;min-width:0}
-.slider-val{
-  font-family:'JetBrains Mono',monospace;
-  font-size:0.72rem;color:var(--gold2);
-  min-width:42px;text-align:right;
-}
-
-/* BUTTONS */
-.btn{
-  display:inline-flex;align-items:center;justify-content:center;gap:6px;
-  padding:8px 16px;border-radius:7px;border:none;cursor:pointer;
-  font-family:'Rajdhani',sans-serif;font-size:0.85rem;font-weight:600;
-  letter-spacing:0.06em;transition:all 0.2s ease;text-transform:uppercase;
-}
-.btn-gold{
-  background:linear-gradient(135deg,#c8a96e,#a87840);
-  color:#0a0a0c;
-  box-shadow:0 4px 16px rgba(200,169,110,0.25);
-}
-.btn-gold:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(200,169,110,0.4)}
-.btn-ghost{
-  background:rgba(200,169,110,0.08);
-  border:1px solid rgba(200,169,110,0.25);
-  color:var(--gold2);
-}
-.btn-ghost:hover{background:rgba(200,169,110,0.15);border-color:var(--gold)}
-.btn-red{
-  background:rgba(224,80,80,0.15);
-  border:1px solid rgba(224,80,80,0.3);
-  color:#e08080;
-}
-.btn-red:hover{background:rgba(224,80,80,0.25)}
-.btn-sm{padding:5px 10px;font-size:0.76rem}
-.btn-row{display:flex;gap:8px;flex-wrap:wrap}
-
-/* PERCENT BUTTONS */
-.pct-btns{display:flex;gap:6px}
-.pct-btn{
-  flex:1;padding:6px 4px;border-radius:6px;
-  background:rgba(200,169,110,0.06);
-  border:1px solid rgba(200,169,110,0.15);
-  color:var(--gold2);
-  font-family:'JetBrains Mono',monospace;
-  font-size:0.75rem;cursor:pointer;
-  transition:all 0.18s;text-align:center;
-}
-.pct-btn:hover,.pct-btn.active{
-  background:rgba(200,169,110,0.18);
-  border-color:var(--gold);
-  box-shadow:0 0 8px var(--gold-dim);
-  color:var(--gold3);
-}
-
-/* CHECKBOX */
-.check-row{display:flex;align-items:center;gap:8px;cursor:pointer}
-.check-row input[type=checkbox]{
-  -webkit-appearance:none;appearance:none;
-  width:16px;height:16px;
-  border:1px solid rgba(200,169,110,0.3);
-  border-radius:4px;
-  background:rgba(255,255,255,0.04);
-  cursor:pointer;transition:all 0.2s;position:relative;
-}
-.check-row input[type=checkbox]:checked{
-  background:linear-gradient(135deg,#c8a96e,#a87840);
-  border-color:var(--gold);
-}
-.check-row input[type=checkbox]:checked::after{
-  content:'✓';position:absolute;inset:0;
-  display:flex;align-items:center;justify-content:center;
-  font-size:10px;color:#0a0a0c;font-weight:700;
-}
-.check-label{font-size:0.8rem;color:var(--text-dim)}
-
-/* PREVIEW PANEL */
-.preview-box{
-  background:rgba(8,8,10,0.8);
-  border:1px solid var(--border);
-  border-radius:10px;
-  overflow:hidden;
-  margin-bottom:14px;
-}
-.preview-hdr{
-  padding:10px 14px;
-  display:flex;align-items:center;justify-content:space-between;
-  border-bottom:1px solid var(--border);
-  font-family:'Bebas Neue',sans-serif;font-size:0.9rem;letter-spacing:0.1em;color:var(--gold2);
-}
-.preview-canvas-wrap{
-  width:100%;
-  aspect-ratio:4/3;
-  display:flex;align-items:center;justify-content:center;
-  background:repeating-conic-gradient(rgba(255,255,255,0.03) 0% 25%, transparent 0% 50%) 0 0 / 20px 20px;
-  position:relative;overflow:hidden;
-}
-#previewCanvas{
-  max-width:100%;max-height:100%;
-  object-fit:contain;
-  image-rendering:auto;
-}
-.no-image-msg{
-  position:absolute;inset:0;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:10px;color:var(--text-muted);
-}
-.no-image-msg span{font-size:2.5rem}
-.no-image-msg p{font-size:0.8rem;font-family:'JetBrains Mono',monospace}
-
-/* IMAGE INFO */
-.img-info{
-  display:grid;grid-template-columns:1fr 1fr;
-  gap:6px;padding:10px 14px;
-  border-top:1px solid var(--border);
-}
-.info-item{
-  font-family:'JetBrains Mono',monospace;
-  font-size:0.65rem;
-}
-.info-key{color:var(--text-muted);display:block}
-.info-val{color:var(--gold2);font-weight:500}
-
-/* SAVE SECTION */
-.save-section{
-  background:var(--glass-bg);
-  backdrop-filter:blur(16px);
-  border:1px solid var(--border);
-  border-radius:12px;
-  padding:16px;
-  margin-bottom:14px;
-}
-.save-title{
-  font-family:'Bebas Neue',sans-serif;
-  font-size:1rem;letter-spacing:0.12em;color:var(--gold2);
-  margin-bottom:12px;
   display:flex;align-items:center;gap:8px;
-}
-
-/* BULK QUEUE */
-.bulk-queue{
-  max-height:180px;overflow-y:auto;
-  margin-top:10px;
-  display:flex;flex-direction:column;gap:4px;
-}
-.bulk-item{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:6px 10px;
-  background:rgba(200,169,110,0.05);
-  border:1px solid rgba(200,169,110,0.1);
-  border-radius:6px;
-  font-family:'JetBrains Mono',monospace;font-size:0.7rem;
-  color:var(--text-dim);
-}
-.bulk-item .bulk-name{
-  flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-  color:var(--gold2);
-}
-.bulk-item .bulk-size{color:var(--text-muted);margin-left:8px;flex-shrink:0}
-.bulk-status{
-  width:8px;height:8px;border-radius:50%;
-  background:var(--text-muted);flex-shrink:0;margin-left:6px;
-}
-.bulk-status.done{background:var(--green)}
-.bulk-status.error{background:var(--red)}
-
-/* PROGRESS */
-.progress-bar{
-  height:3px;background:rgba(255,255,255,0.08);
-  border-radius:2px;overflow:hidden;margin:8px 0;
-}
-.progress-fill{
-  height:100%;width:0%;
-  background:linear-gradient(90deg,var(--gold),var(--gold2));
-  border-radius:2px;transition:width 0.3s ease;
-}
-
-/* FOOTER */
-footer{
-  background:rgba(8,8,10,0.95);
-  border-top:1px solid var(--border);
-  padding:28px 40px;
-  display:flex;align-items:flex-start;justify-content:space-between;
-  gap:30px;
-  flex-wrap:wrap;
-  position:relative;z-index:1;
-}
-.footer-brand{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:0.15em;color:var(--gold2);margin-bottom:8px}
-.footer-query{font-size:0.82rem;color:var(--text-dim);margin-bottom:12px;letter-spacing:0.04em}
-.footer-links{display:flex;flex-direction:column;gap:10px}
-.footer-link{
-  display:flex;align-items:center;gap:12px;
-  text-decoration:none;
-  padding:10px 16px;
-  background:rgba(200,169,110,0.05);
-  border:1px solid rgba(200,169,110,0.15);
-  border-radius:8px;
-  transition:all 0.2s;
-  color:var(--gold2);
-  font-size:1.05rem;
-  font-weight:600;
-  letter-spacing:0.03em;
-  min-height:46px;
-}
-.footer-link:hover{
-  background:rgba(200,169,110,0.12);
-  border-color:var(--gold);
-  transform:translateX(3px);
-  box-shadow:0 4px 16px var(--gold-dim);
-}
-.footer-link-icon{font-size:1.4rem;flex-shrink:0}
-.footer-right{text-align:right}
-.footer-handle{
-  font-family:'Bebas Neue',sans-serif;
-  font-size:1.3rem;letter-spacing:0.12em;
-  color:var(--gold);margin-bottom:6px;
-}
-.footer-copy{font-size:0.78rem;color:var(--text-muted);letter-spacing:0.06em}
-
-/* SECTION DIVIDER */
-.divider{
-  height:1px;background:linear-gradient(90deg,transparent,var(--gold-dim),transparent);
-  margin:12px 0;
-}
-
-/* STATUS BADGE */
-.badge{
-  display:inline-block;padding:2px 8px;border-radius:4px;
-  font-family:'JetBrains Mono',monospace;font-size:0.65rem;
-  font-weight:500;letter-spacing:0.05em;
-}
-.badge-gold{background:rgba(200,169,110,0.15);color:var(--gold2);border:1px solid rgba(200,169,110,0.25)}
-.badge-green{background:rgba(80,192,112,0.12);color:#70d090;border:1px solid rgba(80,192,112,0.2)}
-.badge-dim{background:rgba(255,255,255,0.05);color:var(--text-muted);border:1px solid rgba(255,255,255,0.08)}
-
-/* ROTATE BTNS */
-.rot-btns{display:flex;gap:6px;flex-wrap:wrap}
-.rot-btn{
-  flex:1;min-width:60px;padding:7px 4px;border-radius:6px;
-  background:rgba(200,169,110,0.06);
-  border:1px solid rgba(200,169,110,0.15);
-  color:var(--gold2);font-family:'JetBrains Mono',monospace;
-  font-size:0.72rem;cursor:pointer;text-align:center;
-  transition:all 0.18s;
-}
-.rot-btn:hover{background:rgba(200,169,110,0.15);border-color:var(--gold)}
-
-/* FLIP BTNS */
-.flip-btns{display:flex;gap:8px}
-.flip-btn{
-  flex:1;padding:7px;border-radius:6px;
-  background:rgba(200,169,110,0.06);
-  border:1px solid rgba(200,169,110,0.15);
-  color:var(--gold2);font-family:'JetBrains Mono',monospace;
-  font-size:0.76rem;cursor:pointer;text-align:center;
-  transition:all 0.18s;
-}
-.flip-btn:hover,.flip-btn.active{background:rgba(200,169,110,0.18);border-color:var(--gold)}
-
-/* NOTIFICATION TOAST */
-.toast{
-  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);
-  background:rgba(20,20,22,0.95);
-  border:1px solid var(--border2);
-  border-radius:8px;padding:10px 20px;
-  font-family:'JetBrains Mono',monospace;font-size:0.8rem;color:var(--gold2);
-  backdrop-filter:blur(10px);
-  z-index:9999;
-  transition:transform 0.3s ease,opacity 0.3s ease;
-  opacity:0;pointer-events:none;
+  background:var(--bg-card);
+  border:1px solid var(--border-color);
+  color:var(--text-primary);
+  padding:7px 14px 7px 10px;
+  border-radius:30px;
+  cursor:pointer;
+  font-family:'Rajdhani',sans-serif;
+  font-size:0.75rem;font-weight:600;
+  letter-spacing:0.08em;
+  transition:all 0.3s;
   white-space:nowrap;
 }
-.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.theme-toggle-btn:hover{border-color:var(--border-glow);background:var(--accent-dim);box-shadow:var(--shadow-glow)}
+.theme-icon{
+  width:18px;height:18px;
+  border-radius:50%;
+  background:conic-gradient(var(--accent) 0deg 120deg,#c0caee 120deg 240deg,#d4847a 240deg 360deg);
+  flex-shrink:0;
+  transition:transform 0.5s;
+}
+.theme-toggle-btn:hover .theme-icon{transform:rotate(120deg)}
 
-/* MOBILE */
-@media(max-width:900px){
-  .main-wrap{grid-template-columns:1fr;grid-template-rows:auto auto}
-  .left-panel,.right-panel{max-height:none;position:static}
-  .right-panel{border-top:1px solid var(--border);border-right:none}
-  footer{flex-direction:column;align-items:flex-start}
-  .footer-right{align-self:stretch;text-align:left;border-top:1px solid var(--border);padding-top:16px;margin-top:6px}
+/* undo/redo header btns */
+.hdr-btn{
+  display:flex;align-items:center;justify-content:center;
+  width:36px;height:36px;
+  background:var(--bg-card);
+  border:1px solid var(--border-color);
+  border-radius:8px;
+  color:var(--text-secondary);
+  cursor:pointer;
+  transition:all 0.25s;
+  font-size:0.85rem;
+  font-family:'Rajdhani',sans-serif;
+  font-weight:700;
+}
+.hdr-btn:hover{border-color:var(--accent);color:var(--accent);box-shadow:var(--shadow-glow)}
+.hdr-btn:disabled{opacity:0.3;cursor:not-allowed}
+.undo-redo-group{display:flex;gap:4px;align-items:center}
+.history-count{
+  font-size:0.62rem;color:var(--text-muted);
+  font-family:'JetBrains Mono',monospace;
+  white-space:nowrap;
+}
+
+/* ── MAIN GRID ── */
+.main-content{
+  flex:1;
+  max-width:1600px;width:100%;
+  margin:0 auto;
+  padding:24px 24px;
+  display:grid;
+  grid-template-columns:1fr 400px;
+  gap:24px;
+  align-items:start;
+}
+
+/* ── LEFT COLUMN (preview + tools) ── */
+.left-col{display:flex;flex-direction:column;gap:20px}
+
+/* Upload Zone */
+.upload-zone{
+  background:var(--bg-glass);
+  backdrop-filter:blur(16px);
+  border:2px dashed var(--border-color);
+  border-radius:var(--radius);
+  padding:32px;
+  text-align:center;
+  cursor:pointer;
+  transition:all 0.3s;
+  position:relative;
+  overflow:hidden;
+}
+.upload-zone::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at center,var(--accent-dim) 0%,transparent 70%);
+  opacity:0;transition:opacity 0.3s;
+}
+.upload-zone:hover::before,.upload-zone.drag-over::before{opacity:1}
+.upload-zone:hover,.upload-zone.drag-over{border-color:var(--accent);box-shadow:var(--shadow-glow)}
+.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;z-index:2}
+.upload-icon{font-size:2.2rem;margin-bottom:8px;opacity:0.6}
+.upload-title{font-size:1.1rem;font-weight:600;color:var(--accent);letter-spacing:0.05em}
+.upload-sub{font-size:0.78rem;color:var(--text-muted);margin-top:4px}
+
+/* Preview Panel */
+.preview-panel{
+  background:var(--bg-glass);
+  backdrop-filter:blur(16px);
+  border:1px solid var(--border-color);
+  border-radius:var(--radius);
+  overflow:hidden;
+  box-shadow:var(--shadow-card);
+}
+.preview-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 18px;
+  border-bottom:1px solid var(--border-color);
+  background:rgba(0,0,0,0.2);
+}
+.preview-title{font-size:0.78rem;font-weight:600;letter-spacing:0.1em;color:var(--accent);text-transform:uppercase}
+.preview-meta{font-size:0.68rem;color:var(--text-muted);font-family:'JetBrains Mono',monospace}
+
+/* Before/After Slider */
+.ba-container{
+  position:relative;width:100%;
+  min-height:340px;max-height:560px;
+  overflow:hidden;background:#0a0a0c;
+  display:flex;align-items:center;justify-content:center;
+}
+#canvas-before,#canvas-after{
+  position:absolute;inset:0;
+  width:100%;height:100%;
+  object-fit:contain;
+}
+#canvas-before{z-index:1}
+#canvas-after{z-index:2}
+.ba-clip{
+  position:absolute;inset:0;z-index:2;
+  overflow:hidden;
+}
+.ba-clip canvas{width:100%;height:100%;object-fit:contain}
+.ba-divider{
+  position:absolute;top:0;bottom:0;z-index:10;
+  width:2px;background:var(--accent);
+  cursor:ew-resize;
+  transform:translateX(-50%);
+  box-shadow:0 0 12px rgba(200,169,110,0.6);
+  transition:box-shadow 0.2s;
+}
+.ba-divider::before{
+  content:'';
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  width:32px;height:32px;
+  border-radius:50%;
+  background:var(--accent);
+  box-shadow:0 0 0 2px var(--bg-primary),0 0 16px rgba(200,169,110,0.5);
+  display:flex;align-items:center;justify-content:center;
+}
+.ba-divider::after{
+  content:'◀ ▶';
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  font-size:0.55rem;
+  color:var(--bg-primary);
+  font-weight:900;
+  letter-spacing:-2px;
+  z-index:1;
+  pointer-events:none;
+}
+.ba-label{
+  position:absolute;bottom:10px;
+  padding:3px 10px;
+  background:rgba(0,0,0,0.65);
+  border:1px solid var(--border-color);
+  border-radius:20px;
+  font-size:0.65rem;
+  font-weight:700;letter-spacing:0.1em;
+  color:var(--accent);
+  z-index:15;
+  pointer-events:none;
+  backdrop-filter:blur(6px);
+}
+.ba-label-before{left:12px}
+.ba-label-after{right:12px}
+.no-image-state{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:12px;padding:60px 40px;
+  color:var(--text-muted);
+  width:100%;height:100%;min-height:280px;
+}
+.no-image-state .ni-icon{font-size:3rem;opacity:0.3}
+.no-image-state p{font-size:0.82rem;letter-spacing:0.05em;text-align:center}
+
+/* Preview footer */
+.preview-footer{
+  padding:10px 18px;
+  border-top:1px solid var(--border-color);
+  background:rgba(0,0,0,0.2);
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+}
+.file-info{font-size:0.68rem;font-family:'JetBrains Mono',monospace;color:var(--text-secondary);display:flex;gap:16px;flex-wrap:wrap}
+.file-info span{color:var(--text-muted)}
+.file-info b{color:var(--accent)}
+
+/* ── PRESET TEMPLATES ── */
+.preset-panel{
+  background:var(--bg-glass);
+  backdrop-filter:blur(16px);
+  border:1px solid var(--border-color);
+  border-radius:var(--radius);
+  padding:16px 20px;
+  box-shadow:var(--shadow-card);
+}
+.section-title{
+  font-size:0.72rem;font-weight:700;
+  letter-spacing:0.14em;color:var(--accent);
+  text-transform:uppercase;margin-bottom:12px;
+  display:flex;align-items:center;gap:8px;
+}
+.section-title::after{
+  content:'';flex:1;height:1px;
+  background:linear-gradient(to right,var(--border-color),transparent);
+}
+.preset-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.preset-btn{
+  background:var(--bg-secondary);
+  border:1px solid var(--border-color);
+  border-radius:var(--radius-sm);
+  color:var(--text-primary);
+  padding:10px 12px;
+  cursor:pointer;
+  transition:all 0.25s;
+  text-align:left;
+  font-family:'Rajdhani',sans-serif;
+}
+.preset-btn:hover{border-color:var(--accent);background:var(--accent-dim);box-shadow:var(--shadow-glow)}
+.preset-btn.active{border-color:var(--accent);background:var(--accent-dim)}
+.preset-name{font-size:0.82rem;font-weight:700;color:var(--text-primary);display:block;letter-spacing:0.03em}
+.preset-dims{font-size:0.68rem;color:var(--text-muted);font-family:'JetBrains Mono',monospace;margin-top:1px;display:block}
+
+/* ── EXPORT BAR ── */
+.export-bar{
+  background:var(--bg-glass);
+  backdrop-filter:blur(16px);
+  border:1px solid var(--border-color);
+  border-radius:var(--radius);
+  padding:14px 18px;
+  box-shadow:var(--shadow-card);
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+}
+.export-btn{
+  display:flex;align-items:center;gap:8px;
+  padding:10px 20px;
+  border-radius:8px;
+  border:1px solid;
+  cursor:pointer;
+  font-family:'Rajdhani',sans-serif;
+  font-size:0.82rem;font-weight:700;
+  letter-spacing:0.08em;
+  transition:all 0.25s;
+  flex:1;min-width:140px;justify-content:center;
+}
+.export-btn-primary{
+  background:var(--accent);border-color:var(--accent);
+  color:var(--bg-primary);
+}
+.export-btn-primary:hover{background:var(--accent-hover);border-color:var(--accent-hover);box-shadow:0 0 20px rgba(200,169,110,0.4);transform:translateY(-1px)}
+.export-btn-secondary{
+  background:transparent;border-color:var(--border-color);
+  color:var(--text-secondary);
+}
+.export-btn-secondary:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
+.export-btn:disabled{opacity:0.35;cursor:not-allowed;transform:none}
+
+/* ── RIGHT COLUMN (tools) ── */
+.right-col{
+  display:flex;flex-direction:column;gap:14px;
+  max-height:calc(100vh - 180px);
+  overflow-y:auto;
+  overflow-x:hidden;
+  padding-right:4px;
+  scrollbar-width:thin;
+}
+
+/* ── TOOL CARD ── */
+.tool-card{
+  background:var(--bg-glass);
+  backdrop-filter:blur(14px);
+  border:1px solid var(--border-color);
+  border-radius:var(--radius);
+  overflow:hidden;
+  box-shadow:var(--shadow-card);
+  transition:border-color 0.3s,box-shadow 0.3s;
+}
+.tool-card.active{border-color:var(--accent);box-shadow:var(--shadow-glow),var(--shadow-card)}
+.tool-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 16px;
+  background:rgba(0,0,0,0.15);
+  cursor:pointer;
+  user-select:none;
+  transition:background 0.2s;
+}
+.tool-header:hover{background:rgba(0,0,0,0.25)}
+.tool-label{
+  display:flex;align-items:center;gap:10px;
+  font-size:0.78rem;font-weight:700;
+  letter-spacing:0.1em;color:var(--text-primary);
+  text-transform:uppercase;
+}
+.tool-num{
+  width:20px;height:20px;
+  border-radius:4px;
+  background:var(--accent-dim);
+  border:1px solid var(--border-color);
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.62rem;font-weight:700;
+  color:var(--accent);
+  flex-shrink:0;font-family:'JetBrains Mono',monospace;
+}
+.tool-controls{display:flex;align-items:center;gap:8px;flex-shrink:0}
+
+/* Toggle switch */
+.toggle{position:relative;display:inline-block;width:40px;height:22px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+.toggle-slider{
+  position:absolute;inset:0;
+  background:var(--toggle-track);
+  border-radius:22px;
+  cursor:pointer;
+  border:1px solid var(--border-color);
+  transition:background 0.3s,border-color 0.3s;
+}
+.toggle-slider::before{
+  content:'';
+  position:absolute;left:3px;top:2px;
+  width:16px;height:16px;border-radius:50%;
+  background:var(--text-muted);
+  transition:transform 0.3s,background 0.3s;
+  box-shadow:0 1px 4px rgba(0,0,0,0.4);
+}
+.toggle input:checked+.toggle-slider{background:var(--toggle-on);border-color:var(--accent)}
+.toggle input:checked+.toggle-slider::before{transform:translateX(18px);background:#fff}
+
+.tool-collapse{
+  font-size:0.7rem;color:var(--text-muted);
+  padding:2px 4px;border-radius:4px;
+  transition:transform 0.3s,color 0.2s;
+}
+.tool-card.collapsed .tool-collapse{transform:rotate(-90deg)}
+
+/* Tool body */
+.tool-body{
+  padding:14px 16px;
+  border-top:1px solid var(--border-color);
+  display:flex;flex-direction:column;gap:10px;
+  transition:opacity 0.3s;
+}
+.tool-card.collapsed .tool-body{display:none}
+.tool-body.disabled{opacity:0.4;pointer-events:none}
+
+/* form elements */
+.form-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.form-label{font-size:0.7rem;font-weight:600;color:var(--text-secondary);letter-spacing:0.06em;min-width:72px}
+.input-field{
+  flex:1;min-width:0;
+  background:var(--bg-secondary);
+  border:1px solid var(--border-color);
+  border-radius:6px;
+  color:var(--text-primary);
+  padding:6px 10px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.78rem;
+  transition:border-color 0.2s;
+  width:100%;
+}
+.input-field:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-dim)}
+select.input-field{cursor:pointer}
+select.input-field option{background:var(--bg-secondary);color:var(--text-primary)}
+
+.btn-group{display:flex;gap:6px;flex-wrap:wrap}
+.btn-sm{
+  padding:5px 12px;
+  border-radius:6px;
+  border:1px solid var(--border-color);
+  background:var(--bg-secondary);
+  color:var(--text-secondary);
+  font-family:'Rajdhani',sans-serif;
+  font-size:0.75rem;font-weight:600;
+  letter-spacing:0.04em;
+  cursor:pointer;
+  transition:all 0.2s;
+  white-space:nowrap;
+}
+.btn-sm:hover,.btn-sm.active{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
+
+/* Slider */
+.slider-wrap{display:flex;flex-direction:column;gap:4px;width:100%}
+.slider-row{display:flex;align-items:center;gap:8px}
+.slider-label{font-size:0.68rem;color:var(--text-secondary);flex:0 0 110px;font-weight:600;letter-spacing:0.04em}
+.slider-val{
+  font-size:0.68rem;font-family:'JetBrains Mono',monospace;
+  color:var(--accent);flex:0 0 38px;text-align:right;
+}
+input[type=range]{
+  flex:1;-webkit-appearance:none;appearance:none;
+  height:4px;border-radius:4px;
+  background:linear-gradient(to right,var(--slider-thumb) var(--pct,50%),var(--toggle-track) var(--pct,50%));
+  outline:none;cursor:pointer;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;
+  width:14px;height:14px;border-radius:50%;
+  background:var(--slider-thumb);
+  box-shadow:0 0 6px rgba(200,169,110,0.4);
+  transition:transform 0.15s;
+}
+input[type=range]:hover::-webkit-slider-thumb{transform:scale(1.25)}
+input[type=range]::-moz-range-thumb{
+  width:14px;height:14px;border-radius:50%;border:none;
+  background:var(--slider-thumb);
+}
+
+/* Checkbox */
+.cb-row{display:flex;align-items:center;gap:8px;cursor:pointer}
+.cb-row input[type=checkbox]{
+  width:15px;height:15px;
+  accent-color:var(--accent);cursor:pointer;
+}
+.cb-label{font-size:0.75rem;color:var(--text-secondary);font-weight:600;letter-spacing:0.04em}
+
+/* Bulk queue */
+.bulk-queue{
+  max-height:140px;overflow-y:auto;
+  display:flex;flex-direction:column;gap:4px;
+  margin-top:4px;
+}
+.queue-item{
+  display:flex;align-items:center;gap:8px;
+  padding:5px 8px;
+  background:var(--bg-secondary);
+  border:1px solid var(--border-color);
+  border-radius:6px;
+  font-size:0.7rem;
+  font-family:'JetBrains Mono',monospace;
+  color:var(--text-secondary);
+}
+.queue-item .qi-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.queue-item .qi-size{color:var(--text-muted);flex-shrink:0}
+.queue-item .qi-status{flex-shrink:0;font-size:0.65rem;font-weight:700;letter-spacing:0.06em}
+.qi-ok{color:#7ec87e}.qi-wait{color:var(--accent)}.qi-err{color:#e07070}
+
+/* Rotation buttons */
+.rot-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.rot-btn{
+  padding:8px 4px;
+  border-radius:6px;
+  border:1px solid var(--border-color);
+  background:var(--bg-secondary);
+  color:var(--text-secondary);
+  font-family:'Rajdhani',sans-serif;
+  font-size:0.72rem;font-weight:600;
+  cursor:pointer;text-align:center;
+  transition:all 0.2s;
+  display:flex;align-items:center;justify-content:center;gap:4px;
+  flex-direction:column;
+}
+.rot-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
+.rot-icon{font-size:1.1rem;line-height:1}
+
+/* Flip buttons */
+.flip-row{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+
+/* Progress bar */
+.progress-bar{
+  height:3px;background:var(--toggle-track);border-radius:3px;overflow:hidden;
+}
+.progress-fill{
+  height:100%;background:var(--accent);border-radius:3px;
+  transition:width 0.3s;width:0%;
+}
+
+/* ── FOOTER ── */
+footer{
+  background:var(--bg-glass);
+  backdrop-filter:blur(20px);
+  border-top:1px solid var(--border-color);
+  padding:22px 32px;
+  margin-top:auto;
+  transition:all 0.4s;
+}
+.footer-inner{
+  max-width:1600px;margin:0 auto;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:24px;flex-wrap:wrap;
+}
+.footer-left,.footer-right{display:flex;flex-direction:column;gap:6px}
+.footer-brand{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1rem;font-weight:700;
+  color:var(--accent);letter-spacing:0.1em;
+}
+.footer-sub{font-size:0.72rem;color:var(--text-muted);letter-spacing:0.06em;text-transform:uppercase}
+.footer-links{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:4px}
+.footer-link{
+  display:flex;align-items:center;gap:8px;
+  color:var(--text-primary);
+  font-size:1.1rem;font-weight:600;
+  text-decoration:none;
+  padding:8px 14px;
+  border:1px solid var(--border-color);
+  border-radius:8px;
+  background:var(--bg-card);
+  transition:all 0.25s;
+  letter-spacing:0.04em;
+  min-height:44px;
+}
+.footer-link:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-dim);box-shadow:var(--shadow-glow)}
+.footer-icon{font-size:1.2rem;flex-shrink:0}
+.footer-right{align-items:flex-end}
+.footer-handle{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.1rem;font-weight:600;color:var(--accent);letter-spacing:0.1em;
+}
+.footer-copy{font-size:0.75rem;color:var(--text-muted);letter-spacing:0.06em;text-transform:uppercase}
+
+/* Toast */
+.toast-container{
+  position:fixed;bottom:24px;right:24px;z-index:9999;
+  display:flex;flex-direction:column;gap:8px;pointer-events:none;
+}
+.toast{
+  background:var(--bg-glass);
+  backdrop-filter:blur(16px);
+  border:1px solid var(--border-color);
+  border-left:3px solid var(--accent);
+  border-radius:8px;
+  padding:10px 16px;
+  font-size:0.78rem;font-weight:600;
+  color:var(--text-primary);
+  letter-spacing:0.04em;
+  animation:toastIn 0.3s ease,toastOut 0.3s ease 2.5s forwards;
+  pointer-events:none;
+  max-width:280px;
+  box-shadow:var(--shadow-card);
+}
+@keyframes toastIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes toastOut{to{transform:translateX(110%);opacity:0}}
+
+/* ── RESPONSIVE ── */
+@media(max-width:1100px){
+  .main-content{grid-template-columns:1fr 360px;gap:16px;padding:16px}
+}
+@media(max-width:860px){
+  .main-content{grid-template-columns:1fr;padding:12px}
+  .right-col{max-height:none;overflow-y:visible;padding-right:0}
+  .preset-grid{grid-template-columns:repeat(2,1fr)}
+  header{padding:12px 16px}
+  footer{padding:18px 16px}
+  .footer-inner{flex-direction:column;align-items:flex-start}
+  .footer-right{align-items:flex-start}
 }
 @media(max-width:480px){
-  header{padding:10px 16px 10px}
-  .left-panel,.right-panel{padding:14px}
-  footer{padding:20px}
+  .brand-title{font-size:1.2rem}
+  .preset-grid{grid-template-columns:1fr 1fr}
+  .export-bar{flex-direction:column}
+  .export-btn{width:100%}
+  .rot-grid{grid-template-columns:repeat(3,1fr)}
 }
-
-/* PANEL COLLAPSE ARROW */
-.collapse-arrow{
-  color:var(--text-muted);font-size:0.8rem;
-  transition:transform 0.25s;
-}
-.glass-panel.active .collapse-arrow{transform:rotate(180deg);color:var(--gold)}
-
-/* FILTER GRID */
-.filter-grid{display:flex;flex-direction:column;gap:10px}
-.filter-row{display:flex;align-items:center;gap:10px}
-.filter-row .label{font-size:0.73rem;min-width:98px}
 </style>
 </head>
 <body>
+<div id="app">
 
-<!-- HEADER -->
+<!-- ══ HEADER ══ -->
 <header>
-  <div class="brand-name">ADIL IMAGE ADJUST STUDIO</div>
-  <div class="tool-labels">
-    <span class="tl tl1">KB/MB TARGET</span><span class="tl-sep">·</span>
-    <span class="tl tl2">DIMENSIONS</span><span class="tl-sep">·</span>
-    <span class="tl tl3">FORMAT CONVERTER</span><span class="tl-sep">·</span>
-    <span class="tl tl4">BULK MODE</span><span class="tl-sep">·</span>
-    <span class="tl tl5">EXIF REMOVER</span><span class="tl-sep">·</span>
-    <span class="tl tl6">BITRATE</span><span class="tl-sep">·</span>
-    <span class="tl tl7">ROTATION</span><span class="tl-sep">·</span>
-    <span class="tl tl8">GRAYSCALE</span><span class="tl-sep">·</span>
-    <span class="tl tl9">INVERTER</span><span class="tl-sep">·</span>
-    <span class="tl tl10">MIRROR FLIP</span><span class="tl-sep">·</span>
-    <span class="tl tl11">ADVANCED ENGINE FILTERS</span>
+  <div class="header-inner">
+    <div class="brand-block">
+      <div class="brand-title">ADIL IMAGE ADJUST STUDIO</div>
+      <div class="brand-tagline">
+        <span class="tag-item tag-1">KB/MB TARGET</span><span class="tag-dot">·</span>
+        <span class="tag-item tag-2">DIMENSIONS</span><span class="tag-dot">·</span>
+        <span class="tag-item tag-3">FORMAT CONVERTER</span><span class="tag-dot">·</span>
+        <span class="tag-item tag-4">BULK MODE</span><span class="tag-dot">·</span>
+        <span class="tag-item tag-5">EXIF REMOVER</span><span class="tag-dot">·</span>
+        <span class="tag-item tag-6">BITRATE</span><span class="tag-dot">·</span>
+        <span class="tag-item tag-7">ROTATION</span><span class="tag-dot">·</span>
+        <span class="tag-item tag-8">GRAYSCALE</span><span class="tag-dot">·</span>
+        <span class="tag-item tag-9">INVERTER</span><span class="tag-dot">·</span>
+        <span class="tag-item tag-1">MIRROR FLIP</span><span class="tag-dot">·</span>
+        <span class="tag-item tag-2">ADVANCED ENGINE FILTERS</span>
+      </div>
+    </div>
+    <div class="header-controls">
+      <div class="undo-redo-group">
+        <button class="hdr-btn" id="btnUndo" title="Undo" disabled>↩</button>
+        <button class="hdr-btn" id="btnRedo" title="Redo" disabled>↪</button>
+        <span class="history-count" id="historyCount">0/0</span>
+      </div>
+      <button class="theme-toggle-btn" id="themeToggle">
+        <div class="theme-icon" id="themeIcon"></div>
+        <span id="themeLabel">GOLD</span>
+      </button>
+    </div>
   </div>
 </header>
 
-<div class="main-wrap">
-  <!-- LEFT: TOOLS -->
-  <div class="left-panel" id="leftPanel">
+<!-- ══ MAIN ══ -->
+<div class="main-content">
 
-    <!-- UPLOAD -->
+  <!-- LEFT COLUMN -->
+  <div class="left-col">
+
+    <!-- Upload -->
     <div class="upload-zone" id="uploadZone">
-      <span class="upload-icon">⬆</span>
-      <h3>DROP IMAGE OR CLICK TO UPLOAD</h3>
-      <p>JPEG · PNG · WebP · GIF · BMP · TIFF supported</p>
-      <input type="file" id="fileInput" accept="image/*"/>
+      <input type="file" id="fileInput" accept="image/*" multiple>
+      <div class="upload-icon">📁</div>
+      <div class="upload-title">DROP IMAGE OR CLICK TO UPLOAD</div>
+      <div class="upload-sub">Supports JPG · PNG · WebP · GIF · BMP · TIFF</div>
     </div>
 
-    <!-- TOOL 1: KB/MB SIZE TARGET -->
-    <div class="glass-panel" id="panel-size">
-      <div class="panel-hdr" onclick="togglePanel('size')">
-        <div class="panel-title"><span class="panel-icon">⚡</span>KB / MB TARGET</div>
-        <div style="display:flex;align-items:center;gap:10px">
-          <div class="toggle-wrap" onclick="event.stopPropagation()">
-            <label class="toggle"><input type="checkbox" id="toggle-size" onchange="applyAll()"><span class="toggle-slider"></span></label>
-          </div>
-          <span class="collapse-arrow">▼</span>
+    <!-- Preview -->
+    <div class="preview-panel" id="previewPanel">
+      <div class="preview-header">
+        <div class="preview-title">⬛ LIVE BEFORE / AFTER PREVIEW</div>
+        <div class="preview-meta" id="previewMeta">No image loaded</div>
+      </div>
+      <div class="ba-container" id="baContainer">
+        <div id="noImageState" class="no-image-state">
+          <div class="ni-icon">🖼️</div>
+          <p>Upload an image to begin editing</p>
+        </div>
+        <canvas id="canvasBefore" style="display:none"></canvas>
+        <div id="baClip" class="ba-clip" style="display:none">
+          <canvas id="canvasAfter"></canvas>
+        </div>
+        <div id="baDivider" class="ba-divider" style="display:none;left:50%"></div>
+        <div id="baLabelBefore" class="ba-label ba-label-before" style="display:none">ORIGINAL</div>
+        <div id="baLabelAfter" class="ba-label ba-label-after" style="display:none">ADJUSTED</div>
+      </div>
+      <div class="preview-footer">
+        <div class="file-info" id="fileInfo">
+          <span>W: <b id="infoW">—</b></span>
+          <span>H: <b id="infoH">—</b></span>
+          <span>SIZE: <b id="infoSize">—</b></span>
+          <span>FMT: <b id="infoFmt">—</b></span>
+        </div>
+        <div class="progress-bar" style="width:120px">
+          <div class="progress-fill" id="progFill"></div>
         </div>
       </div>
-      <div class="panel-body">
-        <div class="row">
-          <span class="label">TARGET SIZE</span>
-          <input type="number" id="sizeTarget" placeholder="e.g. 500" min="1" style="width:100px" oninput="applyAll()"/>
-          <select id="sizeUnit" style="width:80px" onchange="applyAll()">
+    </div>
+
+    <!-- Preset Templates -->
+    <div class="preset-panel">
+      <div class="section-title">⬛ CANVAS PRESETS</div>
+      <div class="preset-grid">
+        <button class="preset-btn" data-w="1080" data-h="1080" onclick="applyPreset(this)">
+          <span class="preset-name">📷 Instagram Post</span>
+          <span class="preset-dims">1080 × 1080 px</span>
+        </button>
+        <button class="preset-btn" data-w="1080" data-h="1920" onclick="applyPreset(this)">
+          <span class="preset-name">📱 Instagram Story</span>
+          <span class="preset-dims">1080 × 1920 px</span>
+        </button>
+        <button class="preset-btn" data-w="500" data-h="500" onclick="applyPreset(this)">
+          <span class="preset-name">👤 WhatsApp DP</span>
+          <span class="preset-dims">500 × 500 px</span>
+        </button>
+        <button class="preset-btn" data-w="1280" data-h="720" onclick="applyPreset(this)">
+          <span class="preset-name">🎮 Free Fire Banner</span>
+          <span class="preset-dims">1280 × 720 px</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Export Bar -->
+    <div class="export-bar">
+      <button class="export-btn export-btn-primary" id="btnSave" onclick="saveSingle()" disabled>
+        ⬇ SAVE FILE
+      </button>
+      <button class="export-btn export-btn-secondary" id="btnSaveZip" onclick="saveBulkZip()" disabled>
+        🗜 EXPORT ZIP
+      </button>
+    </div>
+
+  </div><!-- /left-col -->
+
+  <!-- RIGHT COLUMN (14 tools) -->
+  <div class="right-col" id="toolsPanel">
+
+    <!-- TOOL 1: KB/MB Size Target -->
+    <div class="tool-card" id="tc-size">
+      <div class="tool-header" onclick="toggleCollapse('tc-size')">
+        <div class="tool-label"><span class="tool-num">01</span>KB / MB SIZE TARGET</div>
+        <div class="tool-controls">
+          <label class="toggle" onclick="event.stopPropagation()">
+            <input type="checkbox" id="tog-size" onchange="onToggle()">
+            <span class="toggle-slider"></span>
+          </label>
+          <span class="tool-collapse">▼</span>
+        </div>
+      </div>
+      <div class="tool-body" id="tb-size">
+        <div class="form-row">
+          <span class="form-label">TARGET</span>
+          <input type="number" class="input-field" id="targetSizeVal" placeholder="e.g. 150" min="1" oninput="onToggle()">
+          <select class="input-field" id="targetSizeUnit" style="flex:0 0 70px" onchange="onToggle()">
             <option value="kb">KB</option>
             <option value="mb">MB</option>
           </select>
         </div>
-        <p style="font-size:0.7rem;color:var(--text-muted);font-family:'JetBrains Mono',monospace;margin-top:4px">
-          ⚠ Uses iterative JPEG quality compression to hit target size
-        </p>
+        <div style="font-size:0.68rem;color:var(--text-muted)">Output quality will be auto-adjusted to meet target.</div>
       </div>
     </div>
 
-    <!-- TOOL 2 & 3 & 4: DIMENSIONS -->
-    <div class="glass-panel" id="panel-dims">
-      <div class="panel-hdr" onclick="togglePanel('dims')">
-        <div class="panel-title"><span class="panel-icon">📐</span>DIMENSIONS &amp; SCALE</div>
-        <div style="display:flex;align-items:center;gap:10px">
-          <div class="toggle-wrap" onclick="event.stopPropagation()">
-            <label class="toggle"><input type="checkbox" id="toggle-dims" onchange="applyAll()"><span class="toggle-slider"></span></label>
-          </div>
-          <span class="collapse-arrow">▼</span>
-        </div>
-      </div>
-      <div class="panel-body">
-        <div class="row"><span class="label">PERCENTAGE</span></div>
-        <div class="pct-btns" style="margin-bottom:12px">
-          <div class="pct-btn" data-pct="25" onclick="setPct(25)">25%</div>
-          <div class="pct-btn" data-pct="50" onclick="setPct(50)">50%</div>
-          <div class="pct-btn" data-pct="75" onclick="setPct(75)">75%</div>
-          <div class="pct-btn active" data-pct="100" onclick="setPct(100)">100%</div>
-        </div>
-        <div class="divider"></div>
-        <div class="row" style="margin-top:10px">
-          <span class="label">WIDTH (px)</span>
-          <input type="number" id="dimW" placeholder="auto" min="1" oninput="onDimInput('w')" style="width:100px"/>
-          <span class="label" style="min-width:20px">×</span>
-          <input type="number" id="dimH" placeholder="auto" min="1" oninput="onDimInput('h')" style="width:100px"/>
-        </div>
-        <div class="row">
-          <label class="check-row">
-            <input type="checkbox" id="lockAspect" checked onchange="applyAll()"/>
-            <span class="check-label">Lock Aspect Ratio</span>
+    <!-- TOOL 2: Percentage Scale -->
+    <div class="tool-card" id="tc-pct">
+      <div class="tool-header" onclick="toggleCollapse('tc-pct')">
+        <div class="tool-label"><span class="tool-num">02</span>PERCENTAGE SCALE</div>
+        <div class="tool-controls">
+          <label class="toggle" onclick="event.stopPropagation()">
+            <input type="checkbox" id="tog-pct" onchange="onToggle()">
+            <span class="toggle-slider"></span>
           </label>
+          <span class="tool-collapse">▼</span>
+        </div>
+      </div>
+      <div class="tool-body" id="tb-pct">
+        <div class="btn-group">
+          <button class="btn-sm" data-pct="25" onclick="setPct(25,this)">25%</button>
+          <button class="btn-sm" data-pct="50" onclick="setPct(50,this)">50%</button>
+          <button class="btn-sm" data-pct="75" onclick="setPct(75,this)">75%</button>
+          <button class="btn-sm active" data-pct="100" onclick="setPct(100,this)">100%</button>
+        </div>
+        <div class="form-row">
+          <span class="form-label">CUSTOM %</span>
+          <input type="number" class="input-field" id="customPct" placeholder="1–100" min="1" max="100" oninput="setPctCustom()">
         </div>
       </div>
     </div>
 
-    <!-- TOOL 5: FORMAT CONVERTER -->
-    <div class="glass-panel" id="panel-fmt">
-      <div class="panel-hdr" onclick="togglePanel('fmt')">
-        <div class="panel-title"><span class="panel-icon">🔄</span>FORMAT CONVERTER</div>
-        <div style="display:flex;align-items:center;gap:10px">
-          <div class="toggle-wrap" onclick="event.stopPropagation()">
-            <label class="toggle"><input type="checkbox" id="toggle-fmt" onchange="applyAll()"><span class="toggle-slider"></span></label>
-          </div>
-          <span class="collapse-arrow">▼</span>
+    <!-- TOOL 3: Precise Dimensions -->
+    <div class="tool-card" id="tc-dims">
+      <div class="tool-header" onclick="toggleCollapse('tc-dims')">
+        <div class="tool-label"><span class="tool-num">03</span>PRECISE DIMENSIONS</div>
+        <div class="tool-controls">
+          <label class="toggle" onclick="event.stopPropagation()">
+            <input type="checkbox" id="tog-dims" onchange="onToggle()">
+            <span class="toggle-slider"></span>
+          </label>
+          <span class="tool-collapse">▼</span>
         </div>
       </div>
-      <div class="panel-body">
-        <div class="row">
-          <span class="label">OUTPUT FORMAT</span>
-          <select id="fmtSelect" onchange="applyAll()" style="flex:1">
-            <option value="jpeg">JPEG</option>
-            <option value="png">PNG</option>
-            <option value="webp">WebP</option>
-            <option value="gif">GIF (static)</option>
+      <div class="tool-body" id="tb-dims">
+        <div class="form-row">
+          <span class="form-label">WIDTH px</span>
+          <input type="number" class="input-field" id="dimW" placeholder="e.g. 1920" min="1" oninput="onDimChange('w')">
+        </div>
+        <div class="form-row">
+          <span class="form-label">HEIGHT px</span>
+          <input type="number" class="input-field" id="dimH" placeholder="e.g. 1080" min="1" oninput="onDimChange('h')">
+        </div>
+      </div>
+    </div>
+
+    <!-- TOOL 4: Aspect Ratio Lock -->
+    <div class="tool-card" id="tc-ar">
+      <div class="tool-header" onclick="toggleCollapse('tc-ar')">
+        <div class="tool-label"><span class="tool-num">04</span>ASPECT RATIO LOCK</div>
+        <div class="tool-controls">
+          <label class="toggle" onclick="event.stopPropagation()">
+            <input type="checkbox" id="tog-ar" onchange="onToggle()">
+            <span class="toggle-slider"></span>
+          </label>
+          <span class="tool-collapse">▼</span>
+        </div>
+      </div>
+      <div class="tool-body" id="tb-ar">
+        <label class="cb-row">
+          <input type="checkbox" id="arLock" onchange="onToggle()" checked>
+          <span class="cb-label">Lock original aspect ratio</span>
+        </label>
+        <div style="font-size:0.68rem;color:var(--text-muted)" id="arInfo">Ratio: —</div>
+      </div>
+    </div>
+
+    <!-- TOOL 5: Format Converter -->
+    <div class="tool-card" id="tc-fmt">
+      <div class="tool-header" onclick="toggleCollapse('tc-fmt')">
+        <div class="tool-label"><span class="tool-num">05</span>FORMAT CONVERTER</div>
+        <div class="tool-controls">
+          <label class="toggle" onclick="event.stopPropagation()">
+            <input type="checkbox" id="tog-fmt" onchange="onToggle()">
+            <span class="toggle-slider"></span>
+          </label>
+          <span class="tool-collapse">▼</span>
+        </div>
+      </div>
+      <div class="tool-body" id="tb-fmt">
+        <div class="form-row">
+          <span class="form-label">OUTPUT</span>
+          <select class="input-field" id="fmtSelect" onchange="onToggle()">
+            <option value="image/jpeg">JPEG</option>
+            <option value="image/png">PNG</option>
+            <option value="image/webp">WebP</option>
+            <option value="image/gif">GIF</option>
           </select>
         </div>
-        <div class="row">
-          <span class="label">QUALITY</span>
-          <div class="slider-wrap">
-            <input type="range" id="fmtQuality" min="0.1" max="1" step="0.01" value="0.92" oninput="updateSlider(this);applyAll()"/>
-          </div>
-          <span class="slider-val" id="fmtQualityVal">92%</span>
+        <div class="form-row">
+          <span class="form-label">QUALITY</span>
+          <input type="range" id="qualSlider" min="1" max="100" value="90" oninput="updSlider(this,'qualVal');onToggle()">
+          <span class="slider-val" id="qualVal">90</span>
         </div>
       </div>
     </div>
 
-    <!-- TOOL 6: BULK MODE -->
-    <div class="glass-panel" id="panel-bulk">
-      <div class="panel-hdr" onclick="togglePanel('bulk')">
-        <div class="panel-title"><span class="panel-icon">📦</span>SMART BULK MODE</div>
-        <div style="display:flex;align-items:center;gap:10px">
-          <div class="toggle-wrap" onclick="event.stopPropagation()">
-            <label class="toggle"><input type="checkbox" id="toggle-bulk" onchange="toggleBulkMode()"><span class="toggle-slider"></span></label>
-          </div>
-          <span class="collapse-arrow">▼</span>
+    <!-- TOOL 6: Bulk Mode -->
+    <div class="tool-card" id="tc-bulk">
+      <div class="tool-header" onclick="toggleCollapse('tc-bulk')">
+        <div class="tool-label"><span class="tool-num">06</span>SMART BULK MODE</div>
+        <div class="tool-controls">
+          <label class="toggle" onclick="event.stopPropagation()">
+            <input type="checkbox" id="tog-bulk" onchange="onBulkToggle()">
+            <span class="toggle-slider"></span>
+          </label>
+          <span class="tool-collapse">▼</span>
         </div>
       </div>
-      <div class="panel-body">
-        <div class="row">
-          <button class="btn btn-ghost btn-sm" onclick="document.getElementById('bulkInput').click()">⬆ SELECT MULTIPLE FILES</button>
-          <input type="file" id="bulkInput" multiple accept="image/*" onchange="loadBulkFiles(event)"/>
+      <div class="tool-body" id="tb-bulk">
+        <div class="upload-zone" style="padding:16px;min-height:auto" id="bulkDropZone">
+          <input type="file" id="bulkFileInput" accept="image/*" multiple>
+          <div style="font-size:0.78rem;color:var(--text-secondary);font-weight:600">DROP MULTIPLE IMAGES</div>
+          <div class="upload-sub" style="font-size:0.65rem">All active tools will apply to each file</div>
         </div>
-        <div id="bulkQueue" class="bulk-queue"></div>
-        <div id="bulkProgress" class="progress-bar" style="display:none"><div id="bulkFill" class="progress-fill"></div></div>
-        <div class="row" style="margin-top:8px">
-          <button class="btn btn-gold btn-sm" onclick="processBulk()" id="btnBulkProcess" style="display:none">⚙ PROCESS ALL</button>
-          <button class="btn btn-ghost btn-sm" onclick="clearBulk()" id="btnClearBulk" style="display:none">✕ CLEAR</button>
+        <div class="bulk-queue" id="bulkQueue"></div>
+        <div style="font-size:0.68rem;color:var(--text-muted)" id="bulkCount">0 files queued</div>
+      </div>
+    </div>
+
+    <!-- TOOL 7: EXIF Remover -->
+    <div class="tool-card" id="tc-exif">
+      <div class="tool-header" onclick="toggleCollapse('tc-exif')">
+        <div class="tool-label"><span class="tool-num">07</span>EXIF DATA REMOVER</div>
+        <div class="tool-controls">
+          <label class="toggle" onclick="event.stopPropagation()">
+            <input type="checkbox" id="tog-exif" onchange="onToggle()">
+            <span class="toggle-slider"></span>
+          </label>
+          <span class="tool-collapse">▼</span>
+        </div>
+      </div>
+      <div class="tool-body" id="tb-exif">
+        <div style="font-size:0.72rem;color:var(--text-secondary)">Strips all EXIF, IPTC, and XMP metadata from the exported file. GPS, camera model, and timestamps will be removed.</div>
+        <div class="form-row" style="margin-top:4px">
+          <span style="font-size:0.68rem;color:var(--text-muted)" id="exifStatus">Toggle ON to activate stripping.</span>
         </div>
       </div>
     </div>
 
-    <!-- TOOL 7: EXIF REMOVER -->
-    <div class="glass-panel" id="panel-exif">
-      <div class="panel-hdr" onclick="togglePanel('exif')">
-        <div class="panel-title"><span class="panel-icon">🔒</span>EXIF DATA REMOVER</div>
-        <div style="display:flex;align-items:center;gap:10px">
-          <div class="toggle-wrap" onclick="event.stopPropagation()">
-            <label class="toggle"><input type="checkbox" id="toggle-exif" onchange="applyAll()"><span class="toggle-slider"></span></label>
-          </div>
-          <span class="collapse-arrow">▼</span>
+    <!-- TOOL 8: Color Bitrate Optimizer -->
+    <div class="tool-card" id="tc-bit">
+      <div class="tool-header" onclick="toggleCollapse('tc-bit')">
+        <div class="tool-label"><span class="tool-num">08</span>COLOR BITRATE</div>
+        <div class="tool-controls">
+          <label class="toggle" onclick="event.stopPropagation()">
+            <input type="checkbox" id="tog-bit" onchange="onToggle()">
+            <span class="toggle-slider"></span>
+          </label>
+          <span class="tool-collapse">▼</span>
         </div>
       </div>
-      <div class="panel-body">
-        <p style="font-size:0.78rem;color:var(--text-dim);font-family:'JetBrains Mono',monospace;line-height:1.5">
-          Strips all EXIF, IPTC, XMP and GPS metadata from the exported file. Canvas re-draw inherently clears all embedded metadata.
-        </p>
-        <div style="margin-top:8px">
-          <span class="badge badge-green" id="exifStatus">INACTIVE</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- TOOL 8: COLOR BITRATE OPTIMIZER -->
-    <div class="glass-panel" id="panel-bit">
-      <div class="panel-hdr" onclick="togglePanel('bit')">
-        <div class="panel-title"><span class="panel-icon">🎨</span>COLOR BITRATE OPTIMIZER</div>
-        <div style="display:flex;align-items:center;gap:10px">
-          <div class="toggle-wrap" onclick="event.stopPropagation()">
-            <label class="toggle"><input type="checkbox" id="toggle-bit" onchange="applyAll()"><span class="toggle-slider"></span></label>
-          </div>
-          <span class="collapse-arrow">▼</span>
-        </div>
-      </div>
-      <div class="panel-body">
-        <div class="row">
-          <span class="label">COLOR DEPTH</span>
-          <div class="slider-wrap">
-            <input type="range" id="bitDepth" min="0" max="100" value="100" oninput="updateSlider(this);applyAll()"/>
-          </div>
-          <span class="slider-val" id="bitDepthVal">100%</span>
-        </div>
-        <div class="row">
-          <span class="label">POSTERIZE</span>
-          <div class="slider-wrap">
-            <input type="range" id="posterize" min="2" max="256" value="256" oninput="updateSlider(this);applyAll()"/>
-          </div>
-          <span class="slider-val" id="posterizeVal">256</span>
-        </div>
-        <div class="row">
-          <span class="label">DITHER</span>
-          <div class="slider-wrap">
-            <input type="range" id="dither" min="0" max="100" value="0" oninput="updateSlider(this);applyAll()"/>
-          </div>
-          <span class="slider-val" id="ditherVal">0%</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- TOOL 10: ROTATION -->
-    <div class="glass-panel" id="panel-rot">
-      <div class="panel-hdr" onclick="togglePanel('rot')">
-        <div class="panel-title"><span class="panel-icon">🔃</span>IMAGE ROTATION</div>
-        <div style="display:flex;align-items:center;gap:10px">
-          <div class="toggle-wrap" onclick="event.stopPropagation()">
-            <label class="toggle"><input type="checkbox" id="toggle-rot" onchange="applyAll()"><span class="toggle-slider"></span></label>
-          </div>
-          <span class="collapse-arrow">▼</span>
-        </div>
-      </div>
-      <div class="panel-body">
-        <div class="rot-btns">
-          <div class="rot-btn" onclick="setRot(0)">0°</div>
-          <div class="rot-btn" onclick="setRot(90)">90° ↻</div>
-          <div class="rot-btn" onclick="setRot(180)">180°</div>
-          <div class="rot-btn" onclick="setRot(270)">270° ↺</div>
-        </div>
-        <div class="row" style="margin-top:10px">
-          <span class="label" style="font-size:0.72rem">CURRENT:</span>
-          <span class="badge badge-gold" id="rotBadge">0°</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- TOOL 11: GRAYSCALE -->
-    <div class="glass-panel" id="panel-gray">
-      <div class="panel-hdr" onclick="togglePanel('gray')">
-        <div class="panel-title"><span class="panel-icon">◑</span>GRAYSCALE CONVERTER</div>
-        <div style="display:flex;align-items:center;gap:10px">
-          <div class="toggle-wrap" onclick="event.stopPropagation()">
-            <label class="toggle"><input type="checkbox" id="toggle-gray" onchange="applyAll()"><span class="toggle-slider"></span></label>
-          </div>
-          <span class="collapse-arrow">▼</span>
-        </div>
-      </div>
-      <div class="panel-body">
-        <div class="row">
-          <span class="label">INTENSITY</span>
-          <div class="slider-wrap">
-            <input type="range" id="grayIntensity" min="0" max="100" value="100" oninput="updateSlider(this);applyAll()"/>
-          </div>
-          <span class="slider-val" id="grayIntensityVal">100%</span>
-        </div>
-        <div class="row">
-          <span class="label">METHOD</span>
-          <select id="grayMethod" onchange="applyAll()" style="flex:1">
-            <option value="lum">Luminosity (BT.601)</option>
-            <option value="avg">Average</option>
-            <option value="desat">Desaturation</option>
+      <div class="tool-body" id="tb-bit">
+        <div class="form-row">
+          <span class="form-label">DEPTH</span>
+          <select class="input-field" id="bitDepth" onchange="onToggle()">
+            <option value="full">Full Color (24-bit)</option>
+            <option value="high">High (18-bit equiv)</option>
+            <option value="medium">Medium (15-bit equiv)</option>
+            <option value="low">Low (12-bit equiv)</option>
+            <option value="verylow">Very Low (8-bit equiv)</option>
           </select>
         </div>
+        <div style="font-size:0.68rem;color:var(--text-muted)">Reduces unique color count to optimize compression.</div>
       </div>
     </div>
 
-    <!-- TOOL 12: INVERTER -->
-    <div class="glass-panel" id="panel-inv">
-      <div class="panel-hdr" onclick="togglePanel('inv')">
-        <div class="panel-title"><span class="panel-icon">⬡</span>IMAGE INVERTER</div>
-        <div style="display:flex;align-items:center;gap:10px">
-          <div class="toggle-wrap" onclick="event.stopPropagation()">
-            <label class="toggle"><input type="checkbox" id="toggle-inv" onchange="applyAll()"><span class="toggle-slider"></span></label>
-          </div>
-          <span class="collapse-arrow">▼</span>
+    <!-- TOOL 9: Auto-Download Zip -->
+    <div class="tool-card" id="tc-zip">
+      <div class="tool-header" onclick="toggleCollapse('tc-zip')">
+        <div class="tool-label"><span class="tool-num">09</span>AUTO ZIP DOWNLOAD</div>
+        <div class="tool-controls">
+          <label class="toggle" onclick="event.stopPropagation()">
+            <input type="checkbox" id="tog-zip" onchange="onToggle()">
+            <span class="toggle-slider"></span>
+          </label>
+          <span class="tool-collapse">▼</span>
         </div>
       </div>
-      <div class="panel-body">
-        <div class="row">
-          <span class="label">CHANNELS</span>
-          <select id="invChannels" onchange="applyAll()" style="flex:1">
-            <option value="all">All (RGB)</option>
-            <option value="red">Red Only</option>
-            <option value="green">Green Only</option>
-            <option value="blue">Blue Only</option>
-          </select>
-        </div>
-        <div class="row">
-          <span class="label">STRENGTH</span>
-          <div class="slider-wrap">
-            <input type="range" id="invStrength" min="0" max="100" value="100" oninput="updateSlider(this);applyAll()"/>
-          </div>
-          <span class="slider-val" id="invStrengthVal">100%</span>
+      <div class="tool-body" id="tb-zip">
+        <div style="font-size:0.72rem;color:var(--text-secondary)">When ON, bulk exports will be compiled into a single ZIP archive.</div>
+        <div class="form-row" style="margin-top:4px">
+          <span class="form-label">FILENAME</span>
+          <input type="text" class="input-field" id="zipName" value="adilimg_export" placeholder="archive name">
         </div>
       </div>
     </div>
 
-    <!-- TOOL 13: MIRROR FLIP -->
-    <div class="glass-panel" id="panel-flip">
-      <div class="panel-hdr" onclick="togglePanel('flip')">
-        <div class="panel-title"><span class="panel-icon">⇔</span>IMAGE MIRROR FLIP</div>
-        <div style="display:flex;align-items:center;gap:10px">
-          <div class="toggle-wrap" onclick="event.stopPropagation()">
-            <label class="toggle"><input type="checkbox" id="toggle-flip" onchange="applyAll()"><span class="toggle-slider"></span></label>
-          </div>
-          <span class="collapse-arrow">▼</span>
+    <!-- TOOL 10: Rotation -->
+    <div class="tool-card" id="tc-rot">
+      <div class="tool-header" onclick="toggleCollapse('tc-rot')">
+        <div class="tool-label"><span class="tool-num">10</span>IMAGE ROTATION</div>
+        <div class="tool-controls">
+          <label class="toggle" onclick="event.stopPropagation()">
+            <input type="checkbox" id="tog-rot" onchange="onToggle()">
+            <span class="toggle-slider"></span>
+          </label>
+          <span class="tool-collapse">▼</span>
         </div>
       </div>
-      <div class="panel-body">
-        <div class="flip-btns">
-          <div class="flip-btn" id="flipH-btn" onclick="toggleFlip('h')">⇔ HORIZONTAL</div>
-          <div class="flip-btn" id="flipV-btn" onclick="toggleFlip('v')">⇕ VERTICAL</div>
+      <div class="tool-body" id="tb-rot">
+        <div class="rot-grid">
+          <button class="rot-btn" onclick="setRotation(0)"><span class="rot-icon">⬆</span>0°</button>
+          <button class="rot-btn" onclick="setRotation(90)"><span class="rot-icon">➡</span>90°</button>
+          <button class="rot-btn" onclick="setRotation(180)"><span class="rot-icon">⬇</span>180°</button>
+          <button class="rot-btn" onclick="setRotation(270)"><span class="rot-icon">⬅</span>270°</button>
+          <button class="rot-btn" onclick="rotateBy(-90)"><span class="rot-icon">↺</span>CCW</button>
+          <button class="rot-btn" onclick="rotateBy(90)"><span class="rot-icon">↻</span>CW</button>
         </div>
+        <div style="font-size:0.68rem;color:var(--text-muted)">Current: <b id="rotVal" style="color:var(--accent)">0°</b></div>
       </div>
     </div>
 
-    <!-- TOOL 14: ADVANCED ENGINE FILTERS -->
-    <div class="glass-panel" id="panel-adv">
-      <div class="panel-hdr" onclick="togglePanel('adv')">
-        <div class="panel-title"><span class="panel-icon">✦</span>ADVANCED ENGINE FILTERS</div>
-        <div style="display:flex;align-items:center;gap:10px">
-          <div class="toggle-wrap" onclick="event.stopPropagation()">
-            <label class="toggle"><input type="checkbox" id="toggle-adv" onchange="applyAll()"><span class="toggle-slider"></span></label>
-          </div>
-          <span class="collapse-arrow">▼</span>
+    <!-- TOOL 11: Grayscale -->
+    <div class="tool-card" id="tc-gray">
+      <div class="tool-header" onclick="toggleCollapse('tc-gray')">
+        <div class="tool-label"><span class="tool-num">11</span>GRAYSCALE CONVERTER</div>
+        <div class="tool-controls">
+          <label class="toggle" onclick="event.stopPropagation()">
+            <input type="checkbox" id="tog-gray" onchange="onToggle()">
+            <span class="toggle-slider"></span>
+          </label>
+          <span class="tool-collapse">▼</span>
         </div>
       </div>
-      <div class="panel-body">
-        <div class="filter-grid">
-          <!-- 1 Brightness -->
-          <div class="filter-row">
-            <span class="label">BRIGHTNESS</span>
-            <div class="slider-wrap"><input type="range" id="fBrightness" min="-100" max="100" value="0" oninput="updateSlider(this);applyAll()"/></div>
-            <span class="slider-val" id="fBrightnessVal">0</span>
-          </div>
-          <!-- 2 Contrast -->
-          <div class="filter-row">
-            <span class="label">CONTRAST</span>
-            <div class="slider-wrap"><input type="range" id="fContrast" min="-100" max="100" value="0" oninput="updateSlider(this);applyAll()"/></div>
-            <span class="slider-val" id="fContrastVal">0</span>
-          </div>
-          <!-- 3 Saturation -->
-          <div class="filter-row">
-            <span class="label">SATURATION</span>
-            <div class="slider-wrap"><input type="range" id="fSaturation" min="-100" max="100" value="0" oninput="updateSlider(this);applyAll()"/></div>
-            <span class="slider-val" id="fSaturationVal">0</span>
-          </div>
-          <!-- 4 Hue Rotate -->
-          <div class="filter-row">
-            <span class="label">HUE ROTATE</span>
-            <div class="slider-wrap"><input type="range" id="fHue" min="0" max="360" value="0" oninput="updateSlider(this);applyAll()"/></div>
-            <span class="slider-val" id="fHueVal">0°</span>
-          </div>
-          <!-- 5 Blur -->
-          <div class="filter-row">
-            <span class="label">BLUR INTENSITY</span>
-            <div class="slider-wrap"><input type="range" id="fBlur" min="0" max="20" step="0.1" value="0" oninput="updateSlider(this);applyAll()"/></div>
-            <span class="slider-val" id="fBlurVal">0px</span>
-          </div>
-          <!-- 6 Sepia -->
-          <div class="filter-row">
-            <span class="label">SEPIA TONE</span>
-            <div class="slider-wrap"><input type="range" id="fSepia" min="0" max="100" value="0" oninput="updateSlider(this);applyAll()"/></div>
-            <span class="slider-val" id="fSepiaVal">0%</span>
-          </div>
-          <!-- 7 Exposure -->
-          <div class="filter-row">
-            <span class="label">EXPOSURE</span>
-            <div class="slider-wrap"><input type="range" id="fExposure" min="-2" max="2" step="0.01" value="0" oninput="updateSlider(this);applyAll()"/></div>
-            <span class="slider-val" id="fExposureVal">0</span>
-          </div>
-          <!-- 8 Sharpness (unsharp mask) -->
-          <div class="filter-row">
-            <span class="label">SHARPNESS</span>
-            <div class="slider-wrap"><input type="range" id="fSharpness" min="0" max="100" value="0" oninput="updateSlider(this);applyAll()"/></div>
-            <span class="slider-val" id="fSharpnessVal">0%</span>
-          </div>
-          <!-- 9 Color Temperature -->
-          <div class="filter-row">
-            <span class="label">COLOR TEMP</span>
-            <div class="slider-wrap"><input type="range" id="fTemp" min="-100" max="100" value="0" oninput="updateSlider(this);applyAll()"/></div>
-            <span class="slider-val" id="fTempVal">0</span>
-          </div>
-          <!-- 10 Gamma -->
-          <div class="filter-row">
-            <span class="label">GAMMA</span>
-            <div class="slider-wrap"><input type="range" id="fGamma" min="0.2" max="3.0" step="0.01" value="1.0" oninput="updateSlider(this);applyAll()"/></div>
-            <span class="slider-val" id="fGammaVal">1.0</span>
-          </div>
+      <div class="tool-body" id="tb-gray">
+        <div class="slider-row">
+          <span class="slider-label">INTENSITY</span>
+          <input type="range" id="grayInt" min="0" max="100" value="100" oninput="updSlider(this,'grayIntVal');onToggle()">
+          <span class="slider-val" id="grayIntVal">100</span>
         </div>
-        <div class="row" style="margin-top:12px">
-          <button class="btn btn-ghost btn-sm" onclick="resetAdvFilters()">↺ RESET ALL FILTERS</button>
-        </div>
+        <div style="font-size:0.68rem;color:var(--text-muted)">0 = original color · 100 = full monochrome</div>
       </div>
     </div>
 
-  </div><!-- end left-panel -->
-
-  <!-- RIGHT: PREVIEW + SAVE -->
-  <div class="right-panel">
-
-    <!-- PREVIEW -->
-    <div class="preview-box">
-      <div class="preview-hdr">
-        <span>LIVE PREVIEW</span>
-        <span class="badge badge-dim" id="previewBadge">NO IMAGE</span>
-      </div>
-      <div class="preview-canvas-wrap">
-        <div class="no-image-msg" id="noImageMsg">
-          <span>🖼</span>
-          <p>UPLOAD AN IMAGE TO BEGIN</p>
+    <!-- TOOL 12: Inverter -->
+    <div class="tool-card" id="tc-inv">
+      <div class="tool-header" onclick="toggleCollapse('tc-inv')">
+        <div class="tool-label"><span class="tool-num">12</span>IMAGE INVERTER</div>
+        <div class="tool-controls">
+          <label class="toggle" onclick="event.stopPropagation()">
+            <input type="checkbox" id="tog-inv" onchange="onToggle()">
+            <span class="toggle-slider"></span>
+          </label>
+          <span class="tool-collapse">▼</span>
         </div>
-        <canvas id="previewCanvas" style="display:none"></canvas>
       </div>
-      <div class="img-info" id="imgInfo" style="display:none">
-        <div class="info-item"><span class="info-key">ORIGINAL</span><span class="info-val" id="infoOrig">—</span></div>
-        <div class="info-item"><span class="info-key">OUTPUT</span><span class="info-val" id="infoOut">—</span></div>
-        <div class="info-item"><span class="info-key">FORMAT</span><span class="info-val" id="infoFmt">—</span></div>
-        <div class="info-item"><span class="info-key">SIZE EST.</span><span class="info-val" id="infoSize">—</span></div>
+      <div class="tool-body" id="tb-inv">
+        <div style="font-size:0.72rem;color:var(--text-secondary)">Inverts all pixel color channels (negative effect). Toggle OFF to instantly restore original colors.</div>
       </div>
     </div>
 
-    <!-- SAVE SECTION -->
-    <div class="save-section">
-      <div class="save-title">⬇ EXPORT &amp; SAVE</div>
-      <div class="row">
-        <span class="label">FILENAME</span>
-        <input type="text" id="outName" placeholder="adil_output" style="flex:1"/>
+    <!-- TOOL 13: Mirror Flip -->
+    <div class="tool-card" id="tc-flip">
+      <div class="tool-header" onclick="toggleCollapse('tc-flip')">
+        <div class="tool-label"><span class="tool-num">13</span>MIRROR FLIP</div>
+        <div class="tool-controls">
+          <label class="toggle" onclick="event.stopPropagation()">
+            <input type="checkbox" id="tog-flip" onchange="onToggle()">
+            <span class="toggle-slider"></span>
+          </label>
+          <span class="tool-collapse">▼</span>
+        </div>
       </div>
-      <div style="height:10px"></div>
-      <button class="btn btn-gold" style="width:100%;font-size:1rem;padding:12px" onclick="saveImage()">
-        ⬇ SAVE FILE
-      </button>
-      <div class="divider"></div>
-      <!-- Tool 9: Auto Download Zip -->
-      <button class="btn btn-ghost" style="width:100%;font-size:0.85rem;padding:10px" onclick="downloadZip()" id="btnZip" disabled>
-        📦 DOWNLOAD BULK ZIP
-      </button>
-    </div>
-
-    <!-- QUICK STATS -->
-    <div class="glass-panel" style="margin-bottom:0">
-      <div class="panel-hdr" onclick="togglePanel('stats')">
-        <div class="panel-title"><span class="panel-icon">📊</span>ACTIVE TOOLS</div>
-        <span class="collapse-arrow">▼</span>
-      </div>
-      <div class="panel-body" id="activeToolsList" style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--text-dim);line-height:2">
-        <p>No tools active.</p>
+      <div class="tool-body" id="tb-flip">
+        <div class="flip-row">
+          <button class="btn-sm" id="flipH-btn" onclick="setFlip('h',this)">↔ HORIZONTAL</button>
+          <button class="btn-sm" id="flipV-btn" onclick="setFlip('v',this)">↕ VERTICAL</button>
+        </div>
+        <div style="font-size:0.68rem;color:var(--text-muted)">Flip H: <b id="flipHState" style="color:var(--accent)">OFF</b> · Flip V: <b id="flipVState" style="color:var(--accent)">OFF</b></div>
       </div>
     </div>
 
-  </div><!-- end right-panel -->
-</div>
+    <!-- TOOL 14: Advanced Engine Enhancer -->
+    <div class="tool-card" id="tc-adv">
+      <div class="tool-header" onclick="toggleCollapse('tc-adv')">
+        <div class="tool-label"><span class="tool-num">14</span>ADVANCED ENGINE</div>
+        <div class="tool-controls">
+          <label class="toggle" onclick="event.stopPropagation()">
+            <input type="checkbox" id="tog-adv" onchange="onToggle()">
+            <span class="toggle-slider"></span>
+          </label>
+          <span class="tool-collapse">▼</span>
+        </div>
+      </div>
+      <div class="tool-body" id="tb-adv">
+        <div class="slider-wrap">
+          <div class="slider-row">
+            <span class="slider-label">Brightness</span>
+            <input type="range" id="sl-bright" min="-100" max="100" value="0" oninput="updSlider(this,'sv-bright');onToggle()">
+            <span class="slider-val" id="sv-bright">0</span>
+          </div>
+          <div class="slider-row">
+            <span class="slider-label">Contrast</span>
+            <input type="range" id="sl-contrast" min="-100" max="100" value="0" oninput="updSlider(this,'sv-contrast');onToggle()">
+            <span class="slider-val" id="sv-contrast">0</span>
+          </div>
+          <div class="slider-row">
+            <span class="slider-label">Saturation</span>
+            <input type="range" id="sl-sat" min="-100" max="100" value="0" oninput="updSlider(this,'sv-sat');onToggle()">
+            <span class="slider-val" id="sv-sat">0</span>
+          </div>
+          <div class="slider-row">
+            <span class="slider-label">Hue Rotate</span>
+            <input type="range" id="sl-hue" min="0" max="360" value="0" oninput="updSlider(this,'sv-hue');onToggle()">
+            <span class="slider-val" id="sv-hue">0</span>
+          </div>
+          <div class="slider-row">
+            <span class="slider-label">Blur</span>
+            <input type="range" id="sl-blur" min="0" max="20" value="0" step="0.1" oninput="updSlider(this,'sv-blur');onToggle()">
+            <span class="slider-val" id="sv-blur">0</span>
+          </div>
+          <div class="slider-row">
+            <span class="slider-label">Sepia</span>
+            <input type="range" id="sl-sepia" min="0" max="100" value="0" oninput="updSlider(this,'sv-sepia');onToggle()">
+            <span class="slider-val" id="sv-sepia">0</span>
+          </div>
+          <div class="slider-row">
+            <span class="slider-label">Exposure</span>
+            <input type="range" id="sl-exp" min="-100" max="100" value="0" oninput="updSlider(this,'sv-exp');onToggle()">
+            <span class="slider-val" id="sv-exp">0</span>
+          </div>
+          <div class="slider-row">
+            <span class="slider-label">Sharpness</span>
+            <input type="range" id="sl-sharp" min="0" max="10" value="0" step="0.1" oninput="updSlider(this,'sv-sharp');onToggle()">
+            <span class="slider-val" id="sv-sharp">0</span>
+          </div>
+          <div class="slider-row">
+            <span class="slider-label">Temp (W/C)</span>
+            <input type="range" id="sl-temp" min="-100" max="100" value="0" oninput="updSlider(this,'sv-temp');onToggle()">
+            <span class="slider-val" id="sv-temp">0</span>
+          </div>
+          <div class="slider-row">
+            <span class="slider-label">Gamma</span>
+            <input type="range" id="sl-gamma" min="10" max="300" value="100" oninput="updSlider(this,'sv-gamma');onToggle()">
+            <span class="slider-val" id="sv-gamma">100</span>
+          </div>
+        </div>
+        <button class="btn-sm" onclick="resetAdvanced()" style="width:100%;margin-top:4px;text-align:center">↺ RESET ALL SLIDERS</button>
+      </div>
+    </div>
+
+  </div><!-- /right-col -->
+</div><!-- /main-content -->
 
 <!-- FOOTER -->
 <footer>
-  <div class="footer-left">
-    <div class="footer-brand">ADIL IMAGE ADJUST STUDIO</div>
-    <div class="footer-query">FOR ANY QUERY CONTACT:</div>
-    <div class="footer-links">
-      <a class="footer-link" href="mailto:mdadilh314@gmail.com">
-        <span class="footer-link-icon">✉</span>
-        <span>mdadilh314@gmail.com</span>
-      </a>
-      <a class="footer-link" href="https://www.instagram.com/adil_bhai888?igsh=MXQ2NXg2dDBreHgwZQ==" target="_blank" rel="noopener noreferrer">
-        <span class="footer-link-icon">◎</span>
-        <span>@adil_bhai888</span>
-      </a>
+  <div class="footer-inner">
+    <div class="footer-left">
+      <div class="footer-brand">ADIL IMAGE ADJUST STUDIO</div>
+      <div class="footer-sub">FOR ANY QUERY CONTACT:</div>
+      <div class="footer-links">
+        <a href="mailto:mdadilh314@gmail.com" class="footer-link">
+          <span class="footer-icon">✉️</span>
+          <span>mdadilh314@gmail.com</span>
+        </a>
+        <a href="https://www.instagram.com/adil_bhai888?igsh=MXQ2NXg2dDBreHgwZQ==" target="_blank" rel="noopener" class="footer-link">
+          <span class="footer-icon">📷</span>
+          <span>@adil_bhai888</span>
+        </a>
+      </div>
     </div>
-  </div>
-  <div class="footer-right">
-    <div class="footer-handle">@ADILKB/MBWEB2026</div>
-    <div class="footer-copy">ALL RIGHTS RESERVED</div>
+    <div class="footer-right">
+      <div class="footer-handle">@ADILKB/MBWEB2026</div>
+      <div class="footer-copy">ALL RIGHTS RESERVED</div>
+    </div>
   </div>
 </footer>
 
-<!-- TOAST -->
-<div class="toast" id="toast"></div>
+</div><!-- /app -->
+<div class="toast-container" id="toastContainer"></div>
 
-<!-- OFFSCREEN WORKING CANVAS -->
-<canvas id="workCanvas" style="display:none"></canvas>
+<!-- JSZip CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
 <script>
-// ============================================================
-//  STATE
-// ============================================================
-const state = {
-  srcImage: null,       // HTMLImageElement – original source
-  srcFile:  null,       // original File
+/* ════════════════════════════════════════════════════════════
+   ADIL IMAGE ADJUST STUDIO — Complete Client-Side Engine
+   ════════════════════════════════════════════════════════════ */
+
+// ── STATE ──────────────────────────────────────────────────
+const S = {
+  srcImg: null,        // original HTMLImageElement
+  srcDataURL: null,    // raw data URL (before any edits)
+  currentW: 0,
+  currentH: 0,
   rotation: 0,
   flipH: false,
   flipV: false,
-  scalePct: 100,
+  pct: 100,
+  history: [],
+  histIdx: -1,
   bulkFiles: [],
-  bulkProcessed: [],
-  renderRaf: null,
+  previewRaf: null,
+  baX: 0.5,
+  isDraggingBA: false,
 };
 
-// ============================================================
-//  UTILS
-// ============================================================
-function showToast(msg, dur=2400){
-  const t=document.getElementById('toast');
-  t.textContent=msg;t.classList.add('show');
-  clearTimeout(t._timer);
-  t._timer=setTimeout(()=>t.classList.remove('show'),dur);
-}
-
-function fmtBytes(b){
-  if(b<1024)return b+'B';
-  if(b<1048576)return (b/1024).toFixed(1)+'KB';
-  return (b/1048576).toFixed(2)+'MB';
-}
-
-function updateSlider(el){
-  const min=parseFloat(el.min),max=parseFloat(el.max),val=parseFloat(el.value);
-  const pct=((val-min)/(max-min))*100;
-  el.style.setProperty('--val',pct+'%');
-  // Update display value
-  const id=el.id;
-  const labels={
-    fmtQuality: v=>Math.round(v*100)+'%',
-    bitDepth: v=>v+'%', posterize: v=>v, dither: v=>v+'%',
-    grayIntensity: v=>v+'%',
-    invStrength: v=>v+'%',
-    fBrightness: v=>v, fContrast: v=>v, fSaturation: v=>v,
-    fHue: v=>v+'°', fBlur: v=>parseFloat(v).toFixed(1)+'px',
-    fSepia: v=>v+'%', fExposure: v=>parseFloat(v).toFixed(2),
-    fSharpness: v=>v+'%', fTemp: v=>v,
-    fGamma: v=>parseFloat(v).toFixed(2),
-  };
-  const valEl=document.getElementById(id+'Val');
-  if(valEl && labels[id]) valEl.textContent=labels[id](el.value);
-}
-
-// init all sliders on load
-function initSliders(){
-  document.querySelectorAll('input[type=range]').forEach(el=>updateSlider(el));
-}
-
-function g(id){return document.getElementById(id)}
-function gv(id){return g(id)?g(id).value:null}
-function gb(id){return g(id)?g(id).checked:false}
-
-// ============================================================
-//  PANEL TOGGLE (COLLAPSE)
-// ============================================================
-function togglePanel(name){
-  const p=g('panel-'+name);
-  if(!p)return;
-  p.classList.toggle('active');
-}
-
-// ============================================================
-//  UPLOAD
-// ============================================================
-const uploadZone=g('uploadZone');
-uploadZone.addEventListener('click',()=>g('fileInput').click());
-uploadZone.addEventListener('dragover',e=>{e.preventDefault();uploadZone.classList.add('dragover')});
-uploadZone.addEventListener('dragleave',()=>uploadZone.classList.remove('dragover'));
-uploadZone.addEventListener('drop',e=>{
-  e.preventDefault();uploadZone.classList.remove('dragover');
-  if(e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0]);
+// ── THEME SWITCHER ─────────────────────────────────────────
+const THEMES = [
+  {key:'gold',   label:'GOLD',     icon:'conic-gradient(#c8a96e 0deg 120deg,#c0caee 120deg 240deg,#d4847a 240deg 360deg)'},
+  {key:'platinum',label:'SILVER',  icon:'conic-gradient(#c0caee 0deg 120deg,#d4847a 120deg 240deg,#c8a96e 240deg 360deg)'},
+  {key:'rose',   label:'ROSE',     icon:'conic-gradient(#d4847a 0deg 120deg,#c8a96e 120deg 240deg,#c0caee 240deg 360deg)'},
+];
+let themeIdx = 0;
+document.getElementById('themeToggle').addEventListener('click', () => {
+  themeIdx = (themeIdx + 1) % 3;
+  const t = THEMES[themeIdx];
+  document.documentElement.setAttribute('data-theme', t.key === 'gold' ? '' : t.key);
+  document.getElementById('themeLabel').textContent = t.label;
+  document.getElementById('themeIcon').style.background = t.icon;
+  showToast('Theme: ' + t.label);
 });
-g('fileInput').addEventListener('change',e=>{if(e.target.files[0])loadFile(e.target.files[0])});
 
-function loadFile(file){
-  if(!file.type.startsWith('image/')){showToast('⚠ Please select a valid image file.');return;}
-  state.srcFile=file;
-  const reader=new FileReader();
-  reader.onload=ev=>{
-    const img=new Image();
-    img.onload=()=>{
-      state.srcImage=img;
-      g('noImageMsg').style.display='none';
-      g('previewCanvas').style.display='block';
-      g('imgInfo').style.display='grid';
-      g('infoOrig').textContent=img.naturalWidth+'×'+img.naturalHeight;
-      g('infoFmt').textContent=file.type.split('/')[1].toUpperCase();
-      g('outName').value=file.name.replace(/\.[^.]+$/,'');
-      // auto-populate dim inputs
-      g('dimW').value=img.naturalWidth;
-      g('dimH').value=img.naturalHeight;
-      applyAll();
-      showToast('✓ Image loaded: '+file.name);
+// ── TOAST ──────────────────────────────────────────────────
+function showToast(msg) {
+  const c = document.getElementById('toastContainer');
+  const t = document.createElement('div');
+  t.className = 'toast'; t.textContent = msg;
+  c.appendChild(t);
+  setTimeout(() => t.remove(), 2900);
+}
+
+// ── COLLAPSE ───────────────────────────────────────────────
+function toggleCollapse(id) {
+  const card = document.getElementById(id);
+  card.classList.toggle('collapsed');
+}
+
+// ── SLIDER UPDATE ──────────────────────────────────────────
+function updSlider(el, valId) {
+  document.getElementById(valId).textContent = el.value;
+  const min = parseFloat(el.min), max = parseFloat(el.max), val = parseFloat(el.value);
+  const pct = ((val - min) / (max - min) * 100).toFixed(1) + '%';
+  el.style.setProperty('--pct', pct);
+}
+// Initialize all sliders on load
+window.addEventListener('load', () => {
+  document.querySelectorAll('input[type=range]').forEach(el => {
+    const vid = el.id.replace('sl-','sv-').replace('Slider','Val').replace('Int','IntVal').replace('grayInt','grayIntVal').replace('qualSlider','qualVal');
+    // manual mapping
+    const map = {
+      'qualSlider':'qualVal','grayInt':'grayIntVal',
+      'sl-bright':'sv-bright','sl-contrast':'sv-contrast','sl-sat':'sv-sat',
+      'sl-hue':'sv-hue','sl-blur':'sv-blur','sl-sepia':'sv-sepia',
+      'sl-exp':'sv-exp','sl-sharp':'sv-sharp','sl-temp':'sv-temp','sl-gamma':'sv-gamma',
     };
-    img.src=ev.target.result;
+    const targetId = map[el.id];
+    if(targetId) updSlider(el, targetId);
+  });
+});
+
+// ── PERCENT SCALING ────────────────────────────────────────
+function setPct(val, btn) {
+  S.pct = val;
+  document.querySelectorAll('[data-pct]').forEach(b => b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  document.getElementById('customPct').value = val;
+  if(document.getElementById('tog-pct').checked) schedRender();
+}
+function setPctCustom() {
+  const v = parseInt(document.getElementById('customPct').value) || 100;
+  S.pct = Math.max(1, Math.min(100, v));
+  document.querySelectorAll('[data-pct]').forEach(b => b.classList.remove('active'));
+  if(document.getElementById('tog-pct').checked) schedRender();
+}
+
+// ── ROTATION ───────────────────────────────────────────────
+function setRotation(deg) {
+  if(!document.getElementById('tog-rot').checked) document.getElementById('tog-rot').checked = true;
+  S.rotation = ((deg % 360) + 360) % 360;
+  document.getElementById('rotVal').textContent = S.rotation + '°';
+  schedRender();
+  pushHistory();
+}
+function rotateBy(delta) {
+  setRotation(S.rotation + delta);
+}
+
+// ── FLIP ───────────────────────────────────────────────────
+function setFlip(axis, btn) {
+  if(!document.getElementById('tog-flip').checked) document.getElementById('tog-flip').checked = true;
+  if(axis === 'h') {
+    S.flipH = !S.flipH;
+    document.getElementById('flipHState').textContent = S.flipH ? 'ON' : 'OFF';
+    document.getElementById('flipH-btn').classList.toggle('active', S.flipH);
+  } else {
+    S.flipV = !S.flipV;
+    document.getElementById('flipVState').textContent = S.flipV ? 'ON' : 'OFF';
+    document.getElementById('flipV-btn').classList.toggle('active', S.flipV);
+  }
+  schedRender();
+  pushHistory();
+}
+
+// ── DIM CHANGE ─────────────────────────────────────────────
+function onDimChange(axis) {
+  if(!S.srcImg) return;
+  const arLock = document.getElementById('arLock').checked;
+  const togDims = document.getElementById('tog-dims').checked;
+  if(!togDims) return;
+  if(arLock && S.srcImg) {
+    const ar = S.srcImg.naturalWidth / S.srcImg.naturalHeight;
+    if(axis === 'w') {
+      const w = parseInt(document.getElementById('dimW').value) || S.srcImg.naturalWidth;
+      document.getElementById('dimH').value = Math.round(w / ar);
+    } else {
+      const h = parseInt(document.getElementById('dimH').value) || S.srcImg.naturalHeight;
+      document.getElementById('dimW').value = Math.round(h * ar);
+    }
+  }
+  schedRender();
+}
+
+// ── PRESET APPLY ───────────────────────────────────────────
+function applyPreset(btn) {
+  const w = parseInt(btn.dataset.w), h = parseInt(btn.dataset.h);
+  document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('dimW').value = w;
+  document.getElementById('dimH').value = h;
+  document.getElementById('tog-dims').checked = true;
+  document.getElementById('arLock').checked = false;
+  schedRender();
+  pushHistory();
+  showToast('Preset: ' + w + '×' + h);
+}
+
+// ── BULK TOGGLE ────────────────────────────────────────────
+function onBulkToggle() {
+  const on = document.getElementById('tog-bulk').checked;
+  if(on) showToast('Bulk Mode: ON — Drop multiple images');
+  else { S.bulkFiles = []; renderBulkQueue(); }
+}
+
+// ── BULK FILE HANDLING ─────────────────────────────────────
+const bulkInput = document.getElementById('bulkFileInput');
+const bulkDrop = document.getElementById('bulkDropZone');
+bulkInput.addEventListener('change', e => addBulkFiles(e.target.files));
+bulkDrop.addEventListener('dragover', e => { e.preventDefault(); bulkDrop.classList.add('drag-over'); });
+bulkDrop.addEventListener('dragleave', () => bulkDrop.classList.remove('drag-over'));
+bulkDrop.addEventListener('drop', e => {
+  e.preventDefault(); bulkDrop.classList.remove('drag-over');
+  addBulkFiles(e.dataTransfer.files);
+});
+function addBulkFiles(files) {
+  Array.from(files).forEach(f => {
+    if(f.type.startsWith('image/')) S.bulkFiles.push({ file: f, status: 'wait' });
+  });
+  renderBulkQueue();
+  document.getElementById('tog-bulk').checked = true;
+  document.getElementById('btnSaveZip').disabled = false;
+  showToast(S.bulkFiles.length + ' files queued');
+}
+function renderBulkQueue() {
+  const q = document.getElementById('bulkQueue');
+  q.innerHTML = '';
+  S.bulkFiles.slice(0,20).forEach(item => {
+    const d = document.createElement('div'); d.className = 'queue-item';
+    const sz = item.file.size > 1048576 ? (item.file.size/1048576).toFixed(1)+'MB' : (item.file.size/1024).toFixed(0)+'KB';
+    d.innerHTML = `<span class="qi-name">${item.file.name}</span><span class="qi-size">${sz}</span><span class="qi-status ${item.status==='done'?'qi-ok':item.status==='err'?'qi-err':'qi-wait'}">${item.status.toUpperCase()}</span>`;
+    q.appendChild(d);
+  });
+  document.getElementById('bulkCount').textContent = S.bulkFiles.length + ' files queued';
+}
+
+// ── MAIN FILE INPUT ────────────────────────────────────────
+const mainInput = document.getElementById('fileInput');
+const uploadZone = document.getElementById('uploadZone');
+mainInput.addEventListener('change', e => { if(e.target.files[0]) loadImage(e.target.files[0]); });
+uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
+uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
+uploadZone.addEventListener('drop', e => {
+  e.preventDefault(); uploadZone.classList.remove('drag-over');
+  const f = e.dataTransfer.files[0];
+  if(f && f.type.startsWith('image/')) loadImage(f);
+});
+
+function loadImage(file) {
+  const reader = new FileReader();
+  reader.onload = ev => {
+    S.srcDataURL = ev.target.result;
+    const img = new Image();
+    img.onload = () => {
+      S.srcImg = img;
+      S.currentW = img.naturalWidth;
+      S.currentH = img.naturalHeight;
+      document.getElementById('dimW').value = img.naturalWidth;
+      document.getElementById('dimH').value = img.naturalHeight;
+      const ar = (img.naturalWidth/img.naturalHeight).toFixed(3);
+      document.getElementById('arInfo').textContent = 'Ratio: ' + img.naturalWidth + ':' + img.naturalHeight + ' (' + ar + ')';
+      // draw before canvas
+      const cB = document.getElementById('canvasBefore');
+      cB.width = img.naturalWidth; cB.height = img.naturalHeight;
+      cB.getContext('2d').drawImage(img,0,0);
+      showPreviewUI();
+      updateMeta(file);
+      S.history = []; S.histIdx = -1;
+      pushHistory();
+      schedRender();
+      document.getElementById('btnSave').disabled = false;
+      showToast('Image loaded: ' + file.name);
+    };
+    img.src = ev.target.result;
   };
   reader.readAsDataURL(file);
 }
 
-// ============================================================
-//  DIMENSION HELPERS
-// ============================================================
-function setPct(pct){
-  state.scalePct=pct;
-  document.querySelectorAll('.pct-btn').forEach(b=>{
-    b.classList.toggle('active',parseInt(b.dataset.pct)===pct);
+function showPreviewUI() {
+  document.getElementById('noImageState').style.display = 'none';
+  document.getElementById('canvasBefore').style.display = 'block';
+  document.getElementById('baClip').style.display = 'block';
+  document.getElementById('baDivider').style.display = 'block';
+  document.getElementById('baLabelBefore').style.display = 'block';
+  document.getElementById('baLabelAfter').style.display = 'block';
+  setupBA();
+}
+
+function updateMeta(file) {
+  const w = S.srcImg.naturalWidth, h = S.srcImg.naturalHeight;
+  const sz = file.size > 1048576 ? (file.size/1048576).toFixed(2)+'MB' : (file.size/1024).toFixed(1)+'KB';
+  const ext = file.name.split('.').pop().toUpperCase();
+  document.getElementById('infoW').textContent = w;
+  document.getElementById('infoH').textContent = h;
+  document.getElementById('infoSize').textContent = sz;
+  document.getElementById('infoFmt').textContent = ext;
+  document.getElementById('previewMeta').textContent = w+'×'+h+' · '+sz+' · '+ext;
+}
+
+// ── BEFORE/AFTER SLIDER ────────────────────────────────────
+function setupBA() {
+  const cont = document.getElementById('baContainer');
+  const div = document.getElementById('baDivider');
+  const clip = document.getElementById('baClip');
+  S.baX = 0.5;
+  updateBAClip();
+
+  function startDrag(ex) {
+    S.isDraggingBA = true;
+    document.body.style.cursor = 'ew-resize';
+    S.baX = Math.max(0.02, Math.min(0.98, ex / cont.getBoundingClientRect().width));
+    updateBAClip();
+  }
+  div.addEventListener('mousedown', e => { e.preventDefault(); startDrag(e.offsetX + div.getBoundingClientRect().left - cont.getBoundingClientRect().left); });
+  cont.addEventListener('mousemove', e => {
+    if(!S.isDraggingBA) return;
+    const r = cont.getBoundingClientRect();
+    S.baX = Math.max(0.02, Math.min(0.98, (e.clientX - r.left) / r.width));
+    updateBAClip();
   });
-  if(state.srcImage){
-    const w=Math.round(state.srcImage.naturalWidth*pct/100);
-    const h=Math.round(state.srcImage.naturalHeight*pct/100);
-    g('dimW').value=w;g('dimH').value=h;
+  document.addEventListener('mouseup', () => { S.isDraggingBA = false; document.body.style.cursor = ''; });
+  // Touch
+  div.addEventListener('touchstart', e => { e.preventDefault(); const t = e.touches[0]; const r = cont.getBoundingClientRect(); S.baX = Math.max(0.02, Math.min(0.98,(t.clientX-r.left)/r.width)); updateBAClip(); S.isDraggingBA = true; }, {passive:false});
+  cont.addEventListener('touchmove', e => {
+    if(!S.isDraggingBA) return; e.preventDefault();
+    const t = e.touches[0]; const r = cont.getBoundingClientRect();
+    S.baX = Math.max(0.02, Math.min(0.98,(t.clientX-r.left)/r.width));
+    updateBAClip();
+  }, {passive:false});
+  cont.addEventListener('touchend', () => { S.isDraggingBA = false; });
+}
+
+function updateBAClip() {
+  const cont = document.getElementById('baContainer');
+  const div = document.getElementById('baDivider');
+  const clip = document.getElementById('baClip');
+  const pct = (S.baX * 100).toFixed(2) + '%';
+  div.style.left = pct;
+  clip.style.clipPath = `inset(0 0 0 ${pct})`;
+  // also update before canvas clip
+  const cB = document.getElementById('canvasBefore');
+  cB.style.clipPath = `inset(0 ${(100 - S.baX*100).toFixed(2)}% 0 0)`;
+}
+
+// ── SCHEDULED RENDER ───────────────────────────────────────
+function onToggle() {
+  schedRender();
+}
+function schedRender() {
+  if(S.previewRaf) cancelAnimationFrame(S.previewRaf);
+  S.previewRaf = requestAnimationFrame(render);
+}
+
+// ── CORE RENDER ENGINE ─────────────────────────────────────
+function render() {
+  if(!S.srcImg) return;
+
+  // Determine output dimensions
+  let outW = S.srcImg.naturalWidth;
+  let outH = S.srcImg.naturalHeight;
+
+  const togDims = document.getElementById('tog-dims').checked;
+  const togPct = document.getElementById('tog-pct').checked;
+  const togRot = document.getElementById('tog-rot').checked;
+
+  if(togDims) {
+    outW = parseInt(document.getElementById('dimW').value) || outW;
+    outH = parseInt(document.getElementById('dimH').value) || outH;
+  } else if(togPct) {
+    outW = Math.round(S.srcImg.naturalWidth * S.pct / 100);
+    outH = Math.round(S.srcImg.naturalHeight * S.pct / 100);
   }
-  applyAll();
-}
+  outW = Math.max(1, outW); outH = Math.max(1, outH);
 
-function onDimInput(axis){
-  if(!state.srcImage)return;
-  const locked=gb('lockAspect');
-  if(locked){
-    const ar=state.srcImage.naturalWidth/state.srcImage.naturalHeight;
-    if(axis==='w'){
-      const w=parseInt(gv('dimW'))||1;
-      g('dimH').value=Math.round(w/ar);
-    } else {
-      const h=parseInt(gv('dimH'))||1;
-      g('dimW').value=Math.round(h*ar);
+  // Rotation swaps dims if 90/270
+  const rot = togRot ? S.rotation : 0;
+  const togFlip = document.getElementById('tog-flip').checked;
+
+  // Create offscreen canvas for after
+  const cA = document.getElementById('canvasAfter');
+  const rotated = rot === 90 || rot === 270;
+  cA.width = rotated ? outH : outW;
+  cA.height = rotated ? outW : outH;
+
+  const ctx = cA.getContext('2d');
+  ctx.clearRect(0,0,cA.width,cA.height);
+
+  // Transformation stack
+  ctx.save();
+  ctx.translate(cA.width/2, cA.height/2);
+  if(rot) ctx.rotate(rot * Math.PI / 180);
+  const fH = togFlip && S.flipH;
+  const fV = togFlip && S.flipV;
+  ctx.scale(fH ? -1 : 1, fV ? -1 : 1);
+  ctx.drawImage(S.srcImg, -outW/2, -outH/2, outW, outH);
+  ctx.restore();
+
+  // Pixel-level filters
+  const togGray  = document.getElementById('tog-gray').checked;
+  const togInv   = document.getElementById('tog-inv').checked;
+  const togAdv   = document.getElementById('tog-adv').checked;
+  const togBit   = document.getElementById('tog-bit').checked;
+
+  const needPixel = togGray || togInv || togAdv || togBit;
+  if(needPixel) {
+    let imageData = ctx.getImageData(0, 0, cA.width, cA.height);
+    let data = imageData.data;
+
+    const grayInt = togGray ? parseInt(document.getElementById('grayInt').value)/100 : 0;
+    const doInv = togInv;
+    const doAdv = togAdv;
+
+    // Advanced sliders
+    let bright=0,contrast=0,sat=0,hue=0,sepia=0,exposure=0,temp=0,gamma=1,sharp=0;
+    if(doAdv){
+      bright   = parseInt(document.getElementById('sl-bright').value);
+      contrast = parseInt(document.getElementById('sl-contrast').value);
+      sat      = parseInt(document.getElementById('sl-sat').value);
+      hue      = parseInt(document.getElementById('sl-hue').value);
+      sepia    = parseInt(document.getElementById('sl-sepia').value)/100;
+      exposure = parseInt(document.getElementById('sl-exp').value);
+      temp     = parseInt(document.getElementById('sl-temp').value);
+      gamma    = parseInt(document.getElementById('sl-gamma').value)/100;
     }
-  }
-  applyAll();
-}
+    const bitDepth = togBit ? document.getElementById('bitDepth').value : 'full';
+    const bitSteps = {full:256,high:180,medium:128,low:80,verylow:32}[bitDepth];
 
-function getOutputDims(){
-  if(!state.srcImage) return {w:1,h:1};
-  let w=parseInt(gv('dimW'))||state.srcImage.naturalWidth;
-  let h=parseInt(gv('dimH'))||state.srcImage.naturalHeight;
-  if(!gb('toggle-dims')){
-    w=state.srcImage.naturalWidth;
-    h=state.srcImage.naturalHeight;
-  }
-  // apply rotation swap
-  if(state.rotation===90||state.rotation===270) return {w:h,h:w};
-  return {w,h};
-}
+    for(let i=0; i<data.length; i+=4){
+      let r=data[i], g=data[i+1], b=data[i+2];
 
-// ============================================================
-//  FLIP TOGGLE
-// ============================================================
-function toggleFlip(axis){
-  if(axis==='h'){
-    state.flipH=!state.flipH;
-    g('flipH-btn').classList.toggle('active',state.flipH);
-  } else {
-    state.flipV=!state.flipV;
-    g('flipV-btn').classList.toggle('active',state.flipV);
-  }
-  applyAll();
-}
-
-// ============================================================
-//  ROTATION
-// ============================================================
-function setRot(deg){
-  state.rotation=deg;
-  document.querySelectorAll('.rot-btn').forEach((b,i)=>{
-    b.style.borderColor=([0,90,180,270][i]===deg)?'var(--gold)':'rgba(200,169,110,0.15)';
-    b.style.color=([0,90,180,270][i]===deg)?'var(--gold3)':'var(--gold2)';
-  });
-  g('rotBadge').textContent=deg+'°';
-  applyAll();
-}
-
-// ============================================================
-//  PIXEL FILTERS (applied to ImageData)
-// ============================================================
-function applyPixelFilters(imageData){
-  const d=imageData.data;
-  const n=d.length;
-
-  // Collect states
-  const advOn=gb('toggle-adv');
-  const grayOn=gb('toggle-gray');
-  const invOn=gb('toggle-inv');
-  const bitOn=gb('toggle-bit');
-
-  // Advanced filter values
-  const brightness=advOn?parseInt(gv('fBrightness')):0;
-  const contrast=advOn?parseInt(gv('fContrast')):0;
-  const saturation=advOn?parseInt(gv('fSaturation')):0;
-  const exposure=advOn?parseFloat(gv('fExposure')):0;
-  const sepia=advOn?(parseFloat(gv('fSepia'))/100):0;
-  const gamma=advOn?parseFloat(gv('fGamma')):1.0;
-  const temp=advOn?parseInt(gv('fTemp')):0;
-  const sharpness=advOn?parseInt(gv('fSharpness')):0; // handled separately
-
-  // Grayscale
-  const grayInt=grayOn?(parseInt(gv('grayIntensity'))/100):0;
-  const grayMethod=grayOn?gv('grayMethod'):'lum';
-
-  // Invert
-  const invStr=invOn?(parseInt(gv('invStrength'))/100):0;
-  const invCh=invOn?gv('invChannels'):'all';
-
-  // Bitrate / posterize
-  const posterSteps=bitOn?Math.max(2,parseInt(gv('posterize'))):256;
-  const dither=bitOn?(parseInt(gv('dither'))/100):0;
-
-  // Precompute contrast/brightness factor
-  const cFactor=(259*(contrast+255))/(255*(259-contrast));
-
-  for(let i=0;i<n;i+=4){
-    let r=d[i],g2=d[i+1],b=d[i+2];
-
-    // Brightness
-    if(brightness!==0){r+=brightness;g2+=brightness;b+=brightness;}
-
-    // Contrast
-    if(contrast!==0){
-      r=cFactor*(r-128)+128;
-      g2=cFactor*(g2-128)+128;
-      b=cFactor*(b-128)+128;
-    }
-
-    // Exposure (multiply by 2^exp)
-    if(exposure!==0){
-      const expMul=Math.pow(2,exposure);
-      r*=expMul;g2*=expMul;b*=expMul;
-    }
-
-    // Gamma
-    if(gamma!==1.0){
-      r=255*Math.pow(r/255,1/gamma);
-      g2=255*Math.pow(g2/255,1/gamma);
-      b=255*Math.pow(b/255,1/gamma);
-    }
-
-    // Color Temperature (warm/cool)
-    if(temp!==0){
-      if(temp>0){r+=temp*0.6;b-=temp*0.4;}
-      else{r+=temp*0.4;b-=temp*0.6;}
-    }
-
-    // Saturation
-    if(saturation!==0){
-      const grey=0.2989*r+0.587*g2+0.114*b;
-      const satFactor=1+(saturation/100);
-      r=grey+(r-grey)*satFactor;
-      g2=grey+(g2-grey)*satFactor;
-      b=grey+(b-grey)*satFactor;
-    }
-
-    // Sepia
-    if(sepia>0){
-      const sr=r*0.393+g2*0.769+b*0.189;
-      const sg=r*0.349+g2*0.686+b*0.168;
-      const sb=r*0.272+g2*0.534+b*0.131;
-      r=r+(sr-r)*sepia;
-      g2=g2+(sg-g2)*sepia;
-      b=b+(sb-b)*sepia;
-    }
-
-    // Grayscale
-    if(grayInt>0){
-      let lum;
-      if(grayMethod==='lum') lum=0.299*r+0.587*g2+0.114*b;
-      else if(grayMethod==='avg') lum=(r+g2+b)/3;
-      else { // desat
-        lum=(Math.max(r,g2,b)+Math.min(r,g2,b))/2;
+      // Grayscale
+      if(togGray){
+        const lum = 0.299*r + 0.587*g + 0.114*b;
+        r = r + (lum-r)*grayInt;
+        g = g + (lum-g)*grayInt;
+        b = b + (lum-b)*grayInt;
       }
-      r=r+(lum-r)*grayInt;
-      g2=g2+(lum-g2)*grayInt;
-      b=b+(lum-b)*grayInt;
-    }
 
-    // Invert
-    if(invStr>0){
-      if(invCh==='all'||invCh==='red')   r=r+(255-r-r)*invStr;
-      if(invCh==='all'||invCh==='green') g2=g2+(255-g2-g2)*invStr;
-      if(invCh==='all'||invCh==='blue')  b=b+(255-b-b)*invStr;
-    }
+      // Invert
+      if(doInv){ r=255-r; g=255-g; b=255-b; }
 
-    // Posterize / bitrate
-    if(posterSteps<256){
-      const step=255/(posterSteps-1);
-      r=Math.round(r/step)*step;
-      g2=Math.round(g2/step)*step;
-      b=Math.round(b/step)*step;
-      // Ordered dither
-      if(dither>0){
-        const noise=(Math.random()-0.5)*dither*step;
-        r+=noise;g2+=noise;b+=noise;
-      }
-    }
-
-    d[i]=Math.min(255,Math.max(0,r));
-    d[i+1]=Math.min(255,Math.max(0,g2));
-    d[i+2]=Math.min(255,Math.max(0,b));
-  }
-  return imageData;
-}
-
-// ============================================================
-//  SHARPNESS (unsharp mask) — pixel pass
-// ============================================================
-function applySharpness(ctx, w, h, amount){
-  if(amount<=0) return;
-  const strength=amount/100;
-  const src=ctx.getImageData(0,0,w,h);
-  const tmp=ctx.createImageData(w,h);
-  const s=src.data, t=tmp.data;
-  // simple box blur for mask
-  const blur=new Float32Array(w*h*3);
-  for(let y=1;y<h-1;y++){
-    for(let x=1;x<w-1;x++){
-      let sr=0,sg=0,sb=0,cnt=0;
-      for(let dy=-1;dy<=1;dy++){
-        for(let dx=-1;dx<=1;dx++){
-          const idx=((y+dy)*w+(x+dx))*4;
-          sr+=s[idx];sg+=s[idx+1];sb+=s[idx+2];cnt++;
+      if(doAdv){
+        // Exposure
+        if(exposure!==0){ const ef=1+(exposure/100); r*=ef;g*=ef;b*=ef; }
+        // Brightness
+        if(bright!==0){ r+=bright;g+=bright;b+=bright; }
+        // Contrast
+        if(contrast!==0){
+          const cf=259*(contrast+255)/(255*(259-contrast));
+          r=cf*(r-128)+128; g=cf*(g-128)+128; b=cf*(b-128)+128;
+        }
+        // Gamma
+        if(gamma!==1){
+          r=255*Math.pow(r/255,1/gamma);
+          g=255*Math.pow(g/255,1/gamma);
+          b=255*Math.pow(b/255,1/gamma);
+        }
+        // Temperature
+        if(temp!==0){ r+=temp*0.5; b-=temp*0.5; }
+        // Saturation
+        if(sat!==0){
+          const lum2=0.299*r+0.587*g+0.114*b;
+          const sf=1+sat/100;
+          r=lum2+(r-lum2)*sf; g=lum2+(g-lum2)*sf; b=lum2+(b-lum2)*sf;
+        }
+        // Hue rotate (simple approach)
+        if(hue!==0){
+          const hr=hue*Math.PI/180;
+          const U=Math.cos(hr), W=Math.sin(hr);
+          const nr=(0.299+0.701*U+0.168*W)*r+(-0.299+0.587*U-0.330*W)*g+(-0.300-0.328*U+1.250*W)*b;
+          const ng=(-0.299+0.413*U+0.328*W)*r+(0.413+0.587*U+0.035*W)*g+(-0.114-0.100*U-1.050*W)*b;
+          const nb=(-0.300-0.587*U+0.001*W)*r+(-0.114-0.587*U+0.032*W)*g+(0.700+0.300*U+0.813*W)*b;
+          r=nr;g=ng;b=nb;
+        }
+        // Sepia
+        if(sepia>0){
+          const sr=r*(1-0.607*sepia)+g*(0.769*sepia)+b*(0.189*sepia);
+          const sg=r*(0.349*sepia)+g*(1-0.314*sepia)+b*(0.168*sepia);
+          const sb=r*(0.272*sepia)+g*(0.534*sepia)+b*(1-0.869*sepia);
+          r=sr;g=sg;b=sb;
         }
       }
-      const bi=(y*w+x)*3;
-      blur[bi]=sr/cnt;blur[bi+1]=sg/cnt;blur[bi+2]=sb/cnt;
+
+      // Bitrate quantize
+      if(togBit && bitSteps < 256){
+        const step=256/bitSteps;
+        r=Math.round(r/step)*step;
+        g=Math.round(g/step)*step;
+        b=Math.round(b/step)*step;
+      }
+
+      data[i]=Math.max(0,Math.min(255,r));
+      data[i+1]=Math.max(0,Math.min(255,g));
+      data[i+2]=Math.max(0,Math.min(255,b));
+    }
+    ctx.putImageData(imageData,0,0);
+  }
+
+  // Blur (CSS filter on canvas — applied via offscreen)
+  if(togAdv){
+    const blurVal = parseFloat(document.getElementById('sl-blur').value);
+    const sharpVal = parseFloat(document.getElementById('sl-sharp').value);
+    if(blurVal > 0 || sharpVal > 0){
+      const tempC = document.createElement('canvas');
+      tempC.width=cA.width; tempC.height=cA.height;
+      const tCtx=tempC.getContext('2d');
+      if(blurVal>0){
+        tCtx.filter=`blur(${blurVal}px)`;
+        tCtx.drawImage(cA,0,0);
+        ctx.clearRect(0,0,cA.width,cA.height);
+        ctx.drawImage(tempC,0,0);
+      }
+      if(sharpVal>0){
+        applySharpness(ctx,cA.width,cA.height,sharpVal);
+      }
     }
   }
-  for(let i=0;i<w*h;i++){
-    const pi=i*4, bi=i*3;
-    t[pi  ]=Math.min(255,Math.max(0,s[pi  ]+(s[pi  ]-blur[bi  ])*strength*2));
-    t[pi+1]=Math.min(255,Math.max(0,s[pi+1]+(s[pi+1]-blur[bi+1])*strength*2));
-    t[pi+2]=Math.min(255,Math.max(0,s[pi+2]+(s[pi+2]-blur[bi+2])*strength*2));
-    t[pi+3]=s[pi+3];
-  }
-  ctx.putImageData(tmp,0,0);
+
+  // Update BA clip
+  updateBAClip();
 }
 
-// ============================================================
-//  CORE RENDER FUNCTION
-// ============================================================
-function renderToCanvas(targetCanvas, forSave=false){
-  if(!state.srcImage) return;
-
-  const src=state.srcImage;
-  const rot=gb('toggle-rot')?state.rotation:0;
-  const fH=gb('toggle-flip')&&state.flipH;
-  const fV=gb('toggle-flip')&&state.flipV;
-
-  // Source dimensions (before rotation)
-  let sw=src.naturalWidth, sh=src.naturalHeight;
-
-  // Target dimensions
-  let tw,th;
-  if(gb('toggle-dims')){
-    tw=parseInt(gv('dimW'))||sw;
-    th=parseInt(gv('dimH'))||sh;
-  } else {
-    tw=sw; th=sh;
+// Sharpness convolution kernel
+function applySharpness(ctx, w, h, amount) {
+  const imageData = ctx.getImageData(0,0,w,h);
+  const data = imageData.data;
+  const out = new Uint8ClampedArray(data);
+  const k = amount * 0.3;
+  const kern = [0,-k,0,-k,1+4*k,-k,0,-k,0];
+  for(let y=1;y<h-1;y++){
+    for(let x=1;x<w-1;x++){
+      const i=(y*w+x)*4;
+      for(let c=0;c<3;c++){
+        let v=0;
+        let ki=0;
+        for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){
+          v+=data[((y+dy)*w+(x+dx))*4+c]*kern[ki++];
+        }
+        out[i+c]=Math.max(0,Math.min(255,v));
+      }
+      out[i+3]=data[i+3];
+    }
   }
-
-  // Dimensions after rotation
-  const rotated=(rot===90||rot===270);
-  const canW=rotated?th:tw;
-  const canH=rotated?tw:th;
-
-  targetCanvas.width=canW;
-  targetCanvas.height=canH;
-
-  const ctx=targetCanvas.getContext('2d');
-  ctx.clearRect(0,0,canW,canH);
-
-  // CSS blur via filter (fast GPU path)
-  const advOn=gb('toggle-adv');
-  const blurVal=advOn?parseFloat(gv('fBlur')):0;
-  if(blurVal>0){
-    ctx.filter=`blur(${blurVal}px)`;
-  }
-
-  // Transform for rotation + flip
-  ctx.save();
-  ctx.translate(canW/2,canH/2);
-  ctx.rotate(rot*Math.PI/180);
-  ctx.scale(fH?-1:1, fV?-1:1);
-  ctx.drawImage(src, -tw/2, -th/2, tw, th);
-  ctx.restore();
-  ctx.filter='none';
-
-  // Apply pixel-level filters
-  const needsPixel=gb('toggle-adv')||gb('toggle-gray')||gb('toggle-inv')||gb('toggle-bit');
-  if(needsPixel){
-    const imgData=ctx.getImageData(0,0,canW,canH);
-    applyPixelFilters(imgData);
-    ctx.putImageData(imgData,0,0);
-  }
-
-  // Sharpness (after main pixel pass)
-  if(advOn){
-    const sharpVal=parseInt(gv('fSharpness'));
-    if(sharpVal>0) applySharpness(ctx,canW,canH,sharpVal);
-  }
-
-  // Watermark on save only
-  if(forSave){
-    drawWatermark(ctx,canW,canH);
-  }
+  ctx.putImageData(new ImageData(out,w,h),0,0);
 }
 
-// ============================================================
-//  WATERMARK (SAVE ONLY)
-// ============================================================
-function drawWatermark(ctx,w,h){
-  const fontSize=Math.max(10,Math.min(18,w*0.018));
-  ctx.save();
-  ctx.font=`400 ${fontSize}px "JetBrains Mono",monospace`;
-  ctx.textAlign='right';
-  ctx.textBaseline='bottom';
-  ctx.fillStyle='rgba(255,255,255,0.28)';
-  const text='©ADILIMG';
-  // Shadow for visibility on any bg
-  ctx.shadowColor='rgba(0,0,0,0.6)';
-  ctx.shadowBlur=3;
-  ctx.fillText(text,w-10,h-8);
-  ctx.restore();
-}
-
-// ============================================================
-//  SCHEDULE RENDER (RAF throttle)
-// ============================================================
-function applyAll(){
-  if(state.renderRaf) cancelAnimationFrame(state.renderRaf);
-  state.renderRaf=requestAnimationFrame(()=>{
-    renderToCanvas(g('previewCanvas'),false);
-    updateInfoBar();
-    updateActiveToolsList();
-    updateExifBadge();
-  });
-}
-
-// ============================================================
-//  INFO BAR
-// ============================================================
-function updateInfoBar(){
-  if(!state.srcImage) return;
-  const dims=getOutputDims();
-  g('infoOut').textContent=dims.w+'×'+dims.h;
-  // Estimate size via quick encode
-  const wc=g('workCanvas');
-  renderToCanvas(wc,false);
-  const fmtOn=gb('toggle-fmt');
-  const fmt=fmtOn?gv('fmtSelect'):'jpeg';
-  const q=fmtOn?parseFloat(gv('fmtQuality')):0.92;
-  const mimeMap={jpeg:'image/jpeg',png:'image/png',webp:'image/webp',gif:'image/gif'};
-  const dataUrl=wc.toDataURL(mimeMap[fmt]||'image/jpeg',q);
-  const bytes=Math.round((dataUrl.length - dataUrl.indexOf(',')-1)*3/4);
-  g('infoSize').textContent=fmtBytes(bytes);
-  g('previewBadge').textContent=dims.w+'×'+dims.h;
-}
-
-// ============================================================
-//  ACTIVE TOOLS LIST
-// ============================================================
-function updateActiveToolsList(){
-  const map={
-    'size':'KB/MB Target','dims':'Dimensions','fmt':'Format Converter',
-    'bulk':'Bulk Mode','exif':'EXIF Remover','bit':'Bitrate Optimizer',
-    'rot':'Rotation','gray':'Grayscale','inv':'Inverter',
-    'flip':'Mirror Flip','adv':'Advanced Filters'
+// ── HISTORY ────────────────────────────────────────────────
+function captureState() {
+  return {
+    togSize: document.getElementById('tog-size').checked,
+    targetSizeVal: document.getElementById('targetSizeVal').value,
+    targetSizeUnit: document.getElementById('targetSizeUnit').value,
+    togPct: document.getElementById('tog-pct').checked,
+    pct: S.pct,
+    togDims: document.getElementById('tog-dims').checked,
+    dimW: document.getElementById('dimW').value,
+    dimH: document.getElementById('dimH').value,
+    arLock: document.getElementById('arLock').checked,
+    togFmt: document.getElementById('tog-fmt').checked,
+    fmtSelect: document.getElementById('fmtSelect').value,
+    qual: document.getElementById('qualSlider').value,
+    togExif: document.getElementById('tog-exif').checked,
+    togBit: document.getElementById('tog-bit').checked,
+    bitDepth: document.getElementById('bitDepth').value,
+    togRot: document.getElementById('tog-rot').checked,
+    rotation: S.rotation,
+    togGray: document.getElementById('tog-gray').checked,
+    grayInt: document.getElementById('grayInt').value,
+    togInv: document.getElementById('tog-inv').checked,
+    togFlip: document.getElementById('tog-flip').checked,
+    flipH: S.flipH, flipV: S.flipV,
+    togAdv: document.getElementById('tog-adv').checked,
+    bright: document.getElementById('sl-bright').value,
+    contrast: document.getElementById('sl-contrast').value,
+    sat: document.getElementById('sl-sat').value,
+    hue: document.getElementById('sl-hue').value,
+    blur: document.getElementById('sl-blur').value,
+    sepia: document.getElementById('sl-sepia').value,
+    exp: document.getElementById('sl-exp').value,
+    sharp: document.getElementById('sl-sharp').value,
+    temp: document.getElementById('sl-temp').value,
+    gamma: document.getElementById('sl-gamma').value,
   };
-  const active=[];
-  for(const [k,label] of Object.entries(map)){
-    if(gb('toggle-'+k)) active.push(label);
-  }
-  const el=g('activeToolsList');
-  if(!el) return;
-  if(active.length===0){el.innerHTML='<p style="color:var(--text-muted)">No tools active.</p>';return;}
-  el.innerHTML=active.map(a=>`<div>✦ <span style="color:var(--gold2)">${a}</span></div>`).join('');
 }
-
-// ============================================================
-//  EXIF BADGE
-// ============================================================
-function updateExifBadge(){
-  const b=g('exifStatus');
-  if(!b)return;
-  if(gb('toggle-exif')){b.className='badge badge-green';b.textContent='ACTIVE — METADATA STRIPPED';}
-  else{b.className='badge badge-dim';b.textContent='INACTIVE';}
-}
-
-// ============================================================
-//  RESET ADVANCED FILTERS
-// ============================================================
-function resetAdvFilters(){
-  const defaults={fBrightness:0,fContrast:0,fSaturation:0,fHue:0,
-    fBlur:0,fSepia:0,fExposure:0,fSharpness:0,fTemp:0,fGamma:1.0};
-  for(const [id,val] of Object.entries(defaults)){
-    const el=g(id); if(!el)continue; el.value=val; updateSlider(el);
-  }
-  applyAll();
-  showToast('↺ Advanced filters reset.');
-}
-
-// ============================================================
-//  SIZE TARGET COMPRESSION
-// ============================================================
-async function compressToTargetSize(targetBytes, mimeType){
-  return new Promise(resolve=>{
-    if(mimeType==='image/png'||mimeType==='image/gif'){
-      // PNG/GIF can't reliably hit target size via quality — just return raw
-      const wc=g('workCanvas');
-      renderToCanvas(wc,true);
-      resolve(wc.toDataURL(mimeType));
-      return;
-    }
-    const wc=g('workCanvas');
-    renderToCanvas(wc,true);
-    let lo=0.01,hi=1.0,best=wc.toDataURL(mimeType,0.92);
-    for(let iter=0;iter<18;iter++){
-      const mid=(lo+hi)/2;
-      const d=wc.toDataURL(mimeType,mid);
-      const b=Math.round((d.length-d.indexOf(',')-1)*3/4);
-      if(Math.abs(b-targetBytes)<targetBytes*0.02){best=d;break;}
-      if(b>targetBytes)hi=mid; else lo=mid;
-      best=d;
-    }
-    resolve(best);
+function applyState(st) {
+  if(!st) return;
+  document.getElementById('tog-size').checked = st.togSize;
+  document.getElementById('targetSizeVal').value = st.targetSizeVal;
+  document.getElementById('targetSizeUnit').value = st.targetSizeUnit;
+  document.getElementById('tog-pct').checked = st.togPct;
+  S.pct = st.pct;
+  document.getElementById('customPct').value = st.pct;
+  document.getElementById('tog-dims').checked = st.togDims;
+  document.getElementById('dimW').value = st.dimW;
+  document.getElementById('dimH').value = st.dimH;
+  document.getElementById('arLock').checked = st.arLock;
+  document.getElementById('tog-fmt').checked = st.togFmt;
+  document.getElementById('fmtSelect').value = st.fmtSelect;
+  document.getElementById('qualSlider').value = st.qual; updSlider(document.getElementById('qualSlider'),'qualVal');
+  document.getElementById('tog-exif').checked = st.togExif;
+  document.getElementById('tog-bit').checked = st.togBit;
+  document.getElementById('bitDepth').value = st.bitDepth;
+  document.getElementById('tog-rot').checked = st.togRot;
+  S.rotation = st.rotation;
+  document.getElementById('rotVal').textContent = st.rotation + '°';
+  document.getElementById('tog-gray').checked = st.togGray;
+  document.getElementById('grayInt').value = st.grayInt; updSlider(document.getElementById('grayInt'),'grayIntVal');
+  document.getElementById('tog-inv').checked = st.togInv;
+  document.getElementById('tog-flip').checked = st.togFlip;
+  S.flipH = st.flipH; S.flipV = st.flipV;
+  document.getElementById('flipHState').textContent = st.flipH ? 'ON' : 'OFF';
+  document.getElementById('flipVState').textContent = st.flipV ? 'ON' : 'OFF';
+  document.getElementById('flipH-btn').classList.toggle('active', st.flipH);
+  document.getElementById('flipV-btn').classList.toggle('active', st.flipV);
+  document.getElementById('tog-adv').checked = st.togAdv;
+  const advMap = {bright:'sl-bright',contrast:'sl-contrast',sat:'sl-sat',hue:'sl-hue',blur:'sl-blur',sepia:'sl-sepia',exp:'sl-exp',sharp:'sl-sharp',temp:'sl-temp',gamma:'sl-gamma'};
+  const advValMap = {bright:'sv-bright',contrast:'sv-contrast',sat:'sv-sat',hue:'sv-hue',blur:'sv-blur',sepia:'sv-sepia',exp:'sv-exp',sharp:'sv-sharp',temp:'sv-temp',gamma:'sv-gamma'};
+  Object.keys(advMap).forEach(k => {
+    document.getElementById(advMap[k]).value = st[k];
+    updSlider(document.getElementById(advMap[k]), advValMap[k]);
   });
 }
+function pushHistory() {
+  if(!S.srcImg) return;
+  const st = captureState();
+  S.history = S.history.slice(0, S.histIdx+1);
+  S.history.push(st);
+  if(S.history.length > 50) S.history.shift();
+  S.histIdx = S.history.length - 1;
+  updateHistoryUI();
+}
+function updateHistoryUI() {
+  document.getElementById('btnUndo').disabled = S.histIdx <= 0;
+  document.getElementById('btnRedo').disabled = S.histIdx >= S.history.length-1;
+  document.getElementById('historyCount').textContent = (S.histIdx+1)+'/'+S.history.length;
+}
+document.getElementById('btnUndo').addEventListener('click', () => {
+  if(S.histIdx > 0){ S.histIdx--; applyState(S.history[S.histIdx]); schedRender(); updateHistoryUI(); showToast('Undo'); }
+});
+document.getElementById('btnRedo').addEventListener('click', () => {
+  if(S.histIdx < S.history.length-1){ S.histIdx++; applyState(S.history[S.histIdx]); schedRender(); updateHistoryUI(); showToast('Redo'); }
+});
+// Push history on any toggle or significant slider release
+document.querySelectorAll('input[type=range]').forEach(el => el.addEventListener('change', pushHistory));
+document.querySelectorAll('input[type=checkbox]').forEach(el => el.addEventListener('change', pushHistory));
+document.querySelectorAll('select').forEach(el => el.addEventListener('change', pushHistory));
 
-// ============================================================
-//  SAVE IMAGE
-// ============================================================
-async function saveImage(){
-  if(!state.srcImage){showToast('⚠ No image loaded.');return;}
-  const fmtOn=gb('toggle-fmt');
-  const fmt=fmtOn?gv('fmtSelect'):'jpeg';
-  const mimeMap={jpeg:'image/jpeg',png:'image/png',webp:'image/webp',gif:'image/gif'};
-  const mime=mimeMap[fmt]||'image/jpeg';
-  const extMap={jpeg:'jpg',png:'png',webp:'webp',gif:'gif'};
-  const ext=extMap[fmt]||'jpg';
-  const quality=fmtOn?parseFloat(gv('fmtQuality')):0.92;
-  const name=(gv('outName')||'adil_output').replace(/[^a-zA-Z0-9_\-]/g,'_');
+// ── RESET ADVANCED ─────────────────────────────────────────
+function resetAdvanced() {
+  const defs = {bright:0,contrast:0,sat:0,hue:0,blur:0,sepia:0,exp:0,sharp:0,temp:0,gamma:100};
+  const idMap = {bright:'sl-bright',contrast:'sl-contrast',sat:'sl-sat',hue:'sl-hue',blur:'sl-blur',sepia:'sl-sepia',exp:'sl-exp',sharp:'sl-sharp',temp:'sl-temp',gamma:'sl-gamma'};
+  const vMap  = {bright:'sv-bright',contrast:'sv-contrast',sat:'sv-sat',hue:'sv-hue',blur:'sv-blur',sepia:'sv-sepia',exp:'sv-exp',sharp:'sv-sharp',temp:'sv-temp',gamma:'sv-gamma'};
+  Object.keys(defs).forEach(k => {
+    document.getElementById(idMap[k]).value = defs[k];
+    updSlider(document.getElementById(idMap[k]), vMap[k]);
+  });
+  schedRender(); pushHistory(); showToast('Advanced sliders reset');
+}
 
-  let dataUrl;
-  if(gb('toggle-size')&&gv('sizeTarget')){
-    const unit=gv('sizeUnit');
-    const target=parseFloat(gv('sizeTarget'))*(unit==='mb'?1048576:1024);
-    showToast('⚙ Compressing to target size…');
-    dataUrl=await compressToTargetSize(target,mime);
+// ── WATERMARK INJECTION ────────────────────────────────────
+function injectWatermark(canvas) {
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width, h = canvas.height;
+  const fs = Math.max(12, Math.round(Math.min(w,h) * 0.028));
+  ctx.save();
+  ctx.font = `700 ${fs}px "Rajdhani", sans-serif`;
+  ctx.globalAlpha = 0.55;
+  ctx.textAlign = 'right';
+  ctx.textBaseline = 'bottom';
+  // Shadow
+  ctx.shadowColor = 'rgba(0,0,0,0.8)';
+  ctx.shadowBlur = 4;
+  ctx.fillStyle = '#ffffff';
+  const pad = Math.round(fs * 0.6);
+  ctx.fillText('©ADILIMG', w - pad, h - pad);
+  ctx.restore();
+}
+
+// ── BUILD EXPORT CANVAS ────────────────────────────────────
+function buildExportCanvas(srcImageEl) {
+  // Use the current after-canvas as rendered
+  const cA = document.getElementById('canvasAfter');
+  const exp = document.createElement('canvas');
+  exp.width = cA.width; exp.height = cA.height;
+  const ctx = exp.getContext('2d');
+  ctx.drawImage(cA,0,0);
+  return exp;
+}
+
+// ── SAVE SINGLE ────────────────────────────────────────────
+async function saveSingle() {
+  if(!S.srcImg){ showToast('No image loaded!'); return; }
+  setProgress(20);
+  const exp = buildExportCanvas(S.srcImg);
+  injectWatermark(exp);
+
+  const fmt = document.getElementById('tog-fmt').checked ? document.getElementById('fmtSelect').value : 'image/jpeg';
+  let qual = parseInt(document.getElementById('qualSlider').value)/100;
+  const ext = {
+    'image/jpeg':'jpg','image/png':'png','image/webp':'webp','image/gif':'jpg'
+  }[fmt] || 'jpg';
+
+  // KB/MB target
+  const togSize = document.getElementById('tog-size').checked;
+  let blob;
+  if(togSize){
+    const targetKB = parseFloat(document.getElementById('targetSizeVal').value)||0;
+    const unit = document.getElementById('targetSizeUnit').value;
+    const targetBytes = targetKB * (unit==='mb'?1048576:1024);
+    if(targetBytes > 0 && fmt !== 'image/png'){
+      blob = await compressToTarget(exp, fmt, targetBytes);
+    } else {
+      blob = await canvasToBlob(exp, fmt, qual);
+    }
   } else {
-    const wc=g('workCanvas');
-    renderToCanvas(wc,true);
-    dataUrl=wc.toDataURL(mime,quality);
+    blob = await canvasToBlob(exp, fmt, qual);
   }
-
-  const a=document.createElement('a');
-  a.href=dataUrl;
-  a.download=name+'.'+ext;
+  setProgress(80);
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'adilimg_export.' + ext;
   a.click();
-  showToast('✓ Saved: '+name+'.'+ext);
+  setTimeout(()=>URL.revokeObjectURL(url),2000);
+  setProgress(100); setTimeout(()=>setProgress(0),1000);
+  showToast('Saved: adilimg_export.' + ext);
 }
 
-// ============================================================
-//  BULK MODE
-// ============================================================
-function toggleBulkMode(){
-  const on=gb('toggle-bulk');
-  if(on){g('panel-bulk').classList.add('active');}
+function canvasToBlob(canvas, mime, quality) {
+  return new Promise(res => canvas.toBlob(res, mime, quality));
 }
 
-function loadBulkFiles(e){
-  const files=Array.from(e.target.files);
-  if(!files.length)return;
-  state.bulkFiles=files;
-  state.bulkProcessed=[];
-  const queue=g('bulkQueue');
-  queue.innerHTML='';
-  files.forEach((f,i)=>{
-    const row=document.createElement('div');
-    row.className='bulk-item';
-    row.id='bulk-item-'+i;
-    row.innerHTML=`<span class="bulk-name">${f.name}</span><span class="bulk-size">${fmtBytes(f.size)}</span><div class="bulk-status" id="bulk-s-${i}"></div>`;
-    queue.appendChild(row);
-  });
-  g('btnBulkProcess').style.display='inline-flex';
-  g('btnClearBulk').style.display='inline-flex';
-  g('btnZip').disabled=true;
-  showToast('✓ '+files.length+' files queued.');
-}
-
-async function processBulk(){
-  if(!state.bulkFiles.length){showToast('⚠ No files in queue.');return;}
-  state.bulkProcessed=[];
-  const prog=g('bulkProgress');
-  const fill=g('bulkFill');
-  prog.style.display='block';fill.style.width='0%';
-  g('btnBulkProcess').disabled=true;
-
-  const fmt=gb('toggle-fmt')?gv('fmtSelect'):'jpeg';
-  const mimeMap={jpeg:'image/jpeg',png:'image/png',webp:'image/webp',gif:'image/gif'};
-  const extMap={jpeg:'jpg',png:'png',webp:'webp',gif:'gif'};
-  const mime=mimeMap[fmt]||'image/jpeg';
-  const ext=extMap[fmt]||'jpg';
-  const quality=gb('toggle-fmt')?parseFloat(gv('fmtQuality')):0.92;
-
-  for(let i=0;i<state.bulkFiles.length;i++){
-    const f=state.bulkFiles[i];
-    const st=g('bulk-s-'+i);
-    try{
-      const dataUrl=await new Promise((res,rej)=>{
-        const fr=new FileReader();
-        fr.onload=ev=>{
-          const img=new Image();
-          img.onload=()=>{
-            const prev=state.srcImage;
-            state.srcImage=img;
-            const wc=g('workCanvas');
-            renderToCanvas(wc,true);
-            const d=wc.toDataURL(mime,quality);
-            state.srcImage=prev;
-            res(d);
-          };
-          img.onerror=rej;
-          img.src=ev.target.result;
-        };
-        fr.onerror=rej;
-        fr.readAsDataURL(f);
-      });
-      const baseName=f.name.replace(/\.[^.]+$/,'');
-      state.bulkProcessed.push({name:baseName+'.'+ext, data:dataUrl});
-      if(st){st.classList.add('done');}
-    } catch(err){
-      if(st){st.classList.add('error');}
-      console.error('Bulk error:',f.name,err);
-    }
-    fill.style.width=((i+1)/state.bulkFiles.length*100)+'%';
-    await new Promise(r=>setTimeout(r,0)); // yield
+async function compressToTarget(canvas, mime, targetBytes) {
+  let lo=0.01, hi=1.0, best=null;
+  for(let i=0;i<12;i++){
+    const mid=(lo+hi)/2;
+    const b=await canvasToBlob(canvas,mime,mid);
+    if(b.size<=targetBytes){ best=b; lo=mid; } else { hi=mid; }
+    if(hi-lo<0.005) break;
   }
-  g('btnBulkProcess').disabled=false;
-  g('btnZip').disabled=false;
-  showToast('✓ Bulk processing complete! '+state.bulkProcessed.length+' files ready.');
+  return best || await canvasToBlob(canvas,mime,0.1);
 }
 
-function clearBulk(){
-  state.bulkFiles=[];state.bulkProcessed=[];
-  g('bulkQueue').innerHTML='';
-  g('btnBulkProcess').style.display='none';
-  g('btnClearBulk').style.display='none';
-  g('bulkProgress').style.display='none';
-  g('btnZip').disabled=true;
-  showToast('✓ Bulk queue cleared.');
+// ── SAVE BULK ZIP ──────────────────────────────────────────
+async function saveBulkZip() {
+  if(S.bulkFiles.length===0){ showToast('No bulk files queued!'); return; }
+  const useZip = document.getElementById('tog-zip').checked;
+  const fmt = document.getElementById('tog-fmt').checked ? document.getElementById('fmtSelect').value : 'image/jpeg';
+  const qual = parseInt(document.getElementById('qualSlider').value)/100;
+  const ext = {'image/jpeg':'jpg','image/png':'png','image/webp':'webp','image/gif':'jpg'}[fmt]||'jpg';
+  const zip = useZip ? new JSZip() : null;
+  setProgress(5);
+  for(let i=0;i<S.bulkFiles.length;i++){
+    const item = S.bulkFiles[i];
+    try{
+      const dataUrl = await readFileAsDataURL(item.file);
+      const img = await loadImgFromUrl(dataUrl);
+      // Apply same transforms
+      const tmpC = document.createElement('canvas');
+      const togRot = document.getElementById('tog-rot').checked;
+      const rot = togRot ? S.rotation : 0;
+      const rotated = rot===90||rot===270;
+      const togDims = document.getElementById('tog-dims').checked;
+      const togPct = document.getElementById('tog-pct').checked;
+      let oW=img.width,oH=img.height;
+      if(togDims){ oW=parseInt(document.getElementById('dimW').value)||oW; oH=parseInt(document.getElementById('dimH').value)||oH; }
+      else if(togPct){ oW=Math.round(img.width*S.pct/100); oH=Math.round(img.height*S.pct/100); }
+      tmpC.width=rotated?oH:oW; tmpC.height=rotated?oW:oH;
+      const tc=tmpC.getContext('2d');
+      tc.save();tc.translate(tmpC.width/2,tmpC.height/2);
+      if(rot)tc.rotate(rot*Math.PI/180);
+      const togFlip=document.getElementById('tog-flip').checked;
+      tc.scale(togFlip&&S.flipH?-1:1,togFlip&&S.flipV?-1:1);
+      tc.drawImage(img,-oW/2,-oH/2,oW,oH);tc.restore();
+      applyPixelFilters(tc,tmpC.width,tmpC.height);
+      injectWatermark(tmpC);
+      const blob = await canvasToBlob(tmpC,fmt,qual);
+      if(useZip && zip){
+        const fname = item.file.name.replace(/\.[^.]+$/,'') + '_adil.' + ext;
+        zip.file(fname, blob);
+      } else {
+        const url=URL.createObjectURL(blob);
+        const a=document.createElement('a'); a.href=url; a.download=item.file.name.replace(/\.[^.]+$/,'')+'.'+ext; a.click();
+        setTimeout(()=>URL.revokeObjectURL(url),2000);
+      }
+      item.status='done';
+    }catch(e){ item.status='err'; }
+    renderBulkQueue();
+    setProgress(Math.round(10 + (i+1)/S.bulkFiles.length*85));
+  }
+  if(useZip && zip){
+    const zipName=(document.getElementById('zipName').value||'adilimg_export')+'.zip';
+    const blob=await zip.generateAsync({type:'blob'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');a.href=url;a.download=zipName;a.click();
+    setTimeout(()=>URL.revokeObjectURL(url),3000);
+    showToast('ZIP saved: '+zipName);
+  } else {
+    showToast('Bulk export complete!');
+  }
+  setProgress(100); setTimeout(()=>setProgress(0),1000);
 }
 
-// ============================================================
-//  DOWNLOAD ZIP (Tool 9)
-// ============================================================
-async function downloadZip(){
-  if(!state.bulkProcessed.length){showToast('⚠ No processed files. Run bulk first.');return;}
-  showToast('⚙ Building ZIP archive…');
-  const zip=new JSZip();
-  const folder=zip.folder('adil_output');
-  state.bulkProcessed.forEach(item=>{
-    const b64=item.data.split(',')[1];
-    folder.file(item.name,b64,{base64:true});
+function applyPixelFilters(ctx,w,h){
+  const togGray=document.getElementById('tog-gray').checked;
+  const togInv=document.getElementById('tog-inv').checked;
+  const togAdv=document.getElementById('tog-adv').checked;
+  const togBit=document.getElementById('tog-bit').checked;
+  if(!togGray&&!togInv&&!togAdv&&!togBit) return;
+  let imageData=ctx.getImageData(0,0,w,h);
+  let data=imageData.data;
+  const grayInt=togGray?parseInt(document.getElementById('grayInt').value)/100:0;
+  const bitDepth=togBit?document.getElementById('bitDepth').value:'full';
+  const bitSteps={full:256,high:180,medium:128,low:80,verylow:32}[bitDepth];
+  let bright=0,contrast=0,sat=0,hue=0,sepia=0,exposure=0,temp=0,gamma=1;
+  if(togAdv){
+    bright=parseInt(document.getElementById('sl-bright').value);
+    contrast=parseInt(document.getElementById('sl-contrast').value);
+    sat=parseInt(document.getElementById('sl-sat').value);
+    hue=parseInt(document.getElementById('sl-hue').value);
+    sepia=parseInt(document.getElementById('sl-sepia').value)/100;
+    exposure=parseInt(document.getElementById('sl-exp').value);
+    temp=parseInt(document.getElementById('sl-temp').value);
+    gamma=parseInt(document.getElementById('sl-gamma').value)/100;
+  }
+  for(let i=0;i<data.length;i+=4){
+    let r=data[i],g=data[i+1],b=data[i+2];
+    if(togGray){const lum=0.299*r+0.587*g+0.114*b;r+=(lum-r)*grayInt;g+=(lum-g)*grayInt;b+=(lum-b)*grayInt;}
+    if(togInv){r=255-r;g=255-g;b=255-b;}
+    if(togAdv){
+      if(exposure){const ef=1+exposure/100;r*=ef;g*=ef;b*=ef;}
+      if(bright){r+=bright;g+=bright;b+=bright;}
+      if(contrast){const cf=259*(contrast+255)/(255*(259-contrast));r=cf*(r-128)+128;g=cf*(g-128)+128;b=cf*(b-128)+128;}
+      if(gamma!==1){r=255*Math.pow(r/255,1/gamma);g=255*Math.pow(g/255,1/gamma);b=255*Math.pow(b/255,1/gamma);}
+      if(temp){r+=temp*0.5;b-=temp*0.5;}
+      if(sat){const lum2=0.299*r+0.587*g+0.114*b;const sf=1+sat/100;r=lum2+(r-lum2)*sf;g=lum2+(g-lum2)*sf;b=lum2+(b-lum2)*sf;}
+      if(hue){const hr=hue*Math.PI/180;const U=Math.cos(hr),W=Math.sin(hr);const nr=(0.299+0.701*U+0.168*W)*r+(-0.299+0.587*U-0.330*W)*g+(-0.300-0.328*U+1.250*W)*b;const ng=(-0.299+0.413*U+0.328*W)*r+(0.413+0.587*U+0.035*W)*g+(-0.114-0.100*U-1.050*W)*b;const nb=(-0.300-0.587*U+0.001*W)*r+(-0.114-0.587*U+0.032*W)*g+(0.700+0.300*U+0.813*W)*b;r=nr;g=ng;b=nb;}
+      if(sepia>0){const sr=r*(1-0.607*sepia)+g*(0.769*sepia)+b*(0.189*sepia);const sg=r*(0.349*sepia)+g*(1-0.314*sepia)+b*(0.168*sepia);const sb=r*(0.272*sepia)+g*(0.534*sepia)+b*(1-0.869*sepia);r=sr;g=sg;b=sb;}
+    }
+    if(togBit&&bitSteps<256){const step=256/bitSteps;r=Math.round(r/step)*step;g=Math.round(g/step)*step;b=Math.round(b/step)*step;}
+    data[i]=Math.max(0,Math.min(255,r));data[i+1]=Math.max(0,Math.min(255,g));data[i+2]=Math.max(0,Math.min(255,b));
+  }
+  ctx.putImageData(imageData,0,0);
+}
+
+// ── HELPERS ────────────────────────────────────────────────
+function readFileAsDataURL(file){
+  return new Promise((res,rej)=>{
+    const r=new FileReader(); r.onload=e=>res(e.target.result); r.onerror=rej; r.readAsDataURL(file);
   });
-  const blob=await zip.generateAsync({type:'blob',compression:'DEFLATE',compressionOptions:{level:6}});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');
-  a.href=url;a.download='adil_bulk_output.zip';a.click();
-  setTimeout(()=>URL.revokeObjectURL(url),10000);
-  showToast('✓ ZIP downloaded: adil_bulk_output.zip');
 }
-
-// ============================================================
-//  HUE ROTATE via filter string (applied at CSS level for preview speed)
-// Note: We do hue in pixel pass for accuracy. CSS hue only for preview.
-// ============================================================
-
-// ============================================================
-//  INIT
-// ============================================================
-function init(){
-  initSliders();
-  // Open advanced panel by default
-  // Don't open any by default to keep UI clean
-  updateActiveToolsList();
-  updateExifBadge();
-
-  // Set range track fill on all sliders
-  document.querySelectorAll('input[type=range]').forEach(el=>{
-    el.addEventListener('input',()=>updateSlider(el));
-    updateSlider(el);
+function loadImgFromUrl(url){
+  return new Promise((res,rej)=>{
+    const i=new Image(); i.onload=()=>res(i); i.onerror=rej; i.src=url;
   });
 }
+function setProgress(v){
+  document.getElementById('progFill').style.width=v+'%';
+}
 
-document.addEventListener('DOMContentLoaded',init);
+// ── EXIF STATUS ────────────────────────────────────────────
+document.getElementById('tog-exif').addEventListener('change',function(){
+  document.getElementById('exifStatus').textContent = this.checked ? 'EXIF stripping ACTIVE — metadata will be removed on save.' : 'Toggle ON to activate stripping.';
+});
+
+// ── INIT SLIDER PERCENT ────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('input[type=range]').forEach(el => {
+    const min=parseFloat(el.min),max=parseFloat(el.max),val=parseFloat(el.value);
+    el.style.setProperty('--pct',((val-min)/(max-min)*100).toFixed(1)+'%');
+  });
+});
 </script>
 </body>
 </html>
