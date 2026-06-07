@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ADIL PREMIUM IMAGE COMPRESSOR</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #0a0b10;
+    --surface: rgba(255,255,255,0.03);
+    --surface-hover: rgba(255,255,255,0.055);
+    --border: rgba(255,255,255,0.08);
+    --border-active: rgba(255,255,255,0.18);
+    --accent: #c8a96e;
+    --accent2: #e8c99a;
+    --text-primary: #f0ece4;
+    --text-secondary: rgba(240,236,228,0.5);
+    --text-muted: rgba(240,236,228,0.28);
+    --success: #5ec98a;
+    --error: #e87070;
+    --tab-active-bg: rgba(200,169,110,0.1);
+    --radius: 18px;
+    --radius-sm: 10px;
+    --transition: all 0.28s cubic-bezier(0.4,0,0.2,1);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+  /* Background atmosphere */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0;
+    background:
+      radial-gradient(ellipse 80% 50% at 20% -10%, rgba(200,169,110,0.07) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 80% 110%, rgba(100,120,200,0.05) 0%, transparent 55%),
+      radial-gradient(ellipse 40% 30% at 50% 50%, rgba(255,255,255,0.012) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  body::after {
+    content: '';
+    position: fixed; inset: 0; z-index: 0;
+    background-image: url("data:image/svg+xml,%3Csvg width='400' height='400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+    opacity: 0.4; pointer-events: none;
+  }
+  /* Layout */
+  #app {
+    position: relative; z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 60px 28px 120px;
+    display: flex; flex-direction: column; gap: 44px;
+  }
+  /* Header */
+  header { text-align: center; }
+  .brand-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(200,169,110,0.08);
+    border: 1px solid rgba(200,169,110,0.22);
+    border-radius: 100px;
+    padding: 5px 16px 5px 10px;
+    font-size: 11px; font-weight: 500; letter-spacing: 0.12em;
+    color: var(--accent); text-transform: uppercase;
+    margin-bottom: 28px;
+  }
+  .brand-badge span.dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent);
+    display: inline-block;
+    animation: pulse-dot 2s ease-in-out infinite;
+  }
+  @keyframes pulse-dot {
+    0%,100% { opacity:1; transform:scale(1); }
+    50% { opacity:0.5; transform:scale(0.7); }
+  }
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2.4rem, 6vw, 4.2rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    color: var(--text-primary);
+  }
+  h1 span.highlight {
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 60%, #f5e4c0 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .header-sub {
+    margin-top: 14px;
+    font-size: 0.96rem; font-weight: 300;
+    color: var(--text-secondary);
+    letter-spacing: 0.01em;
+  }
+  /* Glass card */
+  .glass {
+    background: var(--surface);
+    backdrop-filter: blur(25px) saturate(160%);
+    -webkit-backdrop-filter: blur(25px) saturate(160%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    transition: var(--transition);
+  }
+  .glass:hover { border-color: rgba(255,255,255,0.11); }
+  /* Tab navigation */
+  .tab-nav {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 6px; padding: 8px;
+    background: rgba(0,0,0,0.25);
+    border: 1px solid var(--border);
+    border-radius: calc(var(--radius) + 4px);
+    backdrop-filter: blur(20px);
+  }
+  .tab-btn {
+    position: relative; display: flex; flex-direction: column;
+    align-items: center; gap: 7px;
+    padding: 16px 10px;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.78rem; font-weight: 500;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    transition: var(--transition);
+    text-align: center; line-height: 1.35;
+  }
+  .tab-btn .tab-icon {
+    width: 32px; height: 32px; border-radius: 9px;
+    background: rgba(255,255,255,0.04);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; transition: var(--transition);
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .tab-btn:hover { color: var(--text-primary); background: var(--surface-hover); border-color: var(--border); }
+  .tab-btn:hover .tab-icon { background: rgba(200,169,110,0.1); border-color: rgba(200,169,110,0.2); }
+  .tab-btn.active {
+    background: var(--tab-active-bg);
+    border-color: rgba(200,169,110,0.25);
+    color: var(--accent2);
+  }
+  .tab-btn.active .tab-icon {
+    background: rgba(200,169,110,0.14);
+    border-color: rgba(200,169,110,0.3);
+  }
+  /* Tab panels */
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; animation: fadeUp 0.3s ease; }
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(12px); }
+    to { opacity:1; transform:translateY(0); }
+  }
+  /* Section labels */
+  .section-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.72rem; font-weight: 700;
+    letter-spacing: 0.13em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 20px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-label::after {
+    content: ''; flex: 1; height: 1px;
+    background: linear-gradient(90deg, rgba(200,169,110,0.25) 0%, transparent 100%);
+  }
+  /* Drop zone */
+  .drop-zone {
+    border: 1.5px dashed rgba(255,255,255,0.1);
+    border-radius: var(--radius);
+    padding: 52px 28px;
+    display: flex; flex-direction: column; align-items: center; gap: 14px;
+    cursor: pointer; transition: var(--transition);
+    position: relative; overflow: hidden;
+    background: rgba(0,0,0,0.12);
+  }
+  .drop-zone::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(200,169,110,0.04) 0%, transparent 70%);
+    opacity: 0; transition: var(--transition);
+  }
+  .drop-zone:hover, .drop-zone.dragover {
+    border-color: rgba(200,169,110,0.35);
+    background: rgba(200,169,110,0.03);
+  }
+  .drop-zone:hover::before, .drop-zone.dragover::before { opacity: 1; }
+  .drop-icon {
+    width: 58px; height: 58px; border-radius: 16px;
+    background: rgba(200,169,110,0.07);
+    border: 1px solid rgba(200,169,110,0.18);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; transition: var(--transition);
+  }
+  .drop-zone:hover .drop-icon { transform: translateY(-3px); background: rgba(200,169,110,0.13); }
+  .drop-title { font-family: 'Syne', sans-serif; font-size: 1.05rem; font-weight: 700; }
+  .drop-sub { font-size: 0.82rem; color: var(--text-muted); }
+  .drop-zone input[type=file] { display: none; }
+  /* Controls */
+  .controls-grid { display: grid; gap: 20px; }
+  .ctrl-row { display: flex; gap: 14px; align-items: flex-end; flex-wrap: wrap; }
+  .field { display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 140px; }
+  .field label {
+    font-size: 0.75rem; font-weight: 500;
+    color: var(--text-secondary); letter-spacing: 0.05em;
+  }
+  .field input[type=number], .field input[type=text], .field select {
+    background: rgba(0,0,0,0.22);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem; font-weight: 400;
+    padding: 11px 14px;
+    outline: none; transition: var(--transition);
+    appearance: none; -webkit-appearance: none;
+  }
+  .field input:focus, .field select:focus {
+    border-color: rgba(200,169,110,0.4);
+    background: rgba(200,169,110,0.04);
+    box-shadow: 0 0 0 3px rgba(200,169,110,0.08);
+  }
+  .field input::placeholder { color: var(--text-muted); }
+  /* Buttons */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 12px 26px; border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem; font-weight: 500; letter-spacing: 0.02em;
+    border: none; cursor: pointer; transition: var(--transition);
+    text-decoration: none; white-space: nowrap;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent) 0%, #b8944e 100%);
+    color: #1a1206;
+    box-shadow: 0 4px 20px rgba(200,169,110,0.25);
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(200,169,110,0.35);
+    background: linear-gradient(135deg, var(--accent2) 0%, var(--accent) 100%);
+  }
+  .btn-primary:active { transform: translateY(0); }
+  .btn-secondary {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+  }
+  .btn-secondary:hover { background: rgba(255,255,255,0.09); border-color: var(--border-active); }
+  .btn-ghost { background: transparent; color: var(--text-secondary); padding: 10px 16px; }
+  .btn-ghost:hover { color: var(--text-primary); }
+  .btn:disabled { opacity: 0.38; cursor: not-allowed; transform: none !important; }
+  /* Toggle switch */
+  .toggle-wrap { display: flex; align-items: center; gap: 10px; }
+  .toggle-wrap label { font-size: 0.78rem; color: var(--text-secondary); cursor: pointer; }
+  .toggle {
+    position: relative; width: 40px; height: 22px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid var(--border);
+    border-radius: 100px; cursor: pointer;
+    transition: var(--transition);
+    flex-shrink: 0;
+  }
+  .toggle::after {
+    content: ''; position: absolute;
+    top: 3px; left: 3px;
+    width: 14px; height: 14px; border-radius: 50%;
+    background: rgba(255,255,255,0.5);
+    transition: var(--transition);
+  }
+  .toggle.on { background: rgba(200,169,110,0.3); border-color: rgba(200,169,110,0.5); }
+  .toggle.on::after { transform: translateX(18px); background: var(--accent); }
+  /* Scale pills */
+  .scale-pills { display: flex; gap: 8px; flex-wrap: wrap; }
+  .pill {
+    padding: 8px 20px; border-radius: 100px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    font-size: 0.84rem; font-weight: 500;
+    cursor: pointer; transition: var(--transition);
+  }
+  .pill:hover { border-color: rgba(200,169,110,0.3); color: var(--accent); }
+  .pill.active {
+    background: rgba(200,169,110,0.12);
+    border-color: rgba(200,169,110,0.4);
+    color: var(--accent2);
+  }
+  /* Preview panel */
+  .preview-panel {
+    display: none;
+    flex-direction: column; gap: 16px;
+    padding: 22px;
+  }
+  .preview-panel.visible { display: flex; }
+  .preview-strip {
+    display: flex; gap: 14px; align-items: flex-start; flex-wrap: wrap;
+  }
+  .preview-thumb {
+    position: relative; border-radius: 10px; overflow: hidden;
+    border: 1px solid var(--border); flex-shrink: 0;
+  }
+  .preview-thumb img { display: block; width: 90px; height: 70px; object-fit: cover; }
+  .preview-meta { flex: 1; min-width: 200px; }
+  .meta-name {
+    font-size: 0.84rem; font-weight: 600;
+    color: var(--text-primary); margin-bottom: 6px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 280px;
+  }
+  .meta-stats { display: flex; gap: 16px; flex-wrap: wrap; }
+  .stat { display: flex; flex-direction: column; gap: 2px; }
+  .stat-label { font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.07em; }
+  .stat-val { font-size: 0.9rem; font-weight: 600; color: var(--text-primary); font-family: 'Syne', sans-serif; }
+  .stat-val.green { color: var(--success); }
+  .stat-val.gold { color: var(--accent); }
+  /* Progress / loader */
+  .progress-bar-wrap {
+    background: rgba(0,0,0,0.2);
+    border-radius: 100px; height: 4px; overflow: hidden;
+  }
+  .progress-bar {
+    height: 100%; border-radius: 100px;
+    background: linear-gradient(90deg, var(--accent) 0%, var(--accent2) 100%);
+    transition: width 0.3s ease;
+    width: 0%;
+  }
+  /* Bulk table */
+  .bulk-table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; }
+  thead tr { border-bottom: 1px solid var(--border); }
+  th {
+    text-align: left; padding: 10px 14px;
+    font-size: 0.7rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--text-muted);
+  }
+  td { padding: 11px 14px; font-size: 0.84rem; border-bottom: 1px solid rgba(255,255,255,0.04); }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+  .badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 10px; border-radius: 100px;
+    font-size: 0.72rem; font-weight: 600;
+  }
+  .badge-success { background: rgba(94,201,138,0.12); color: var(--success); border: 1px solid rgba(94,201,138,0.2); }
+  .badge-gold { background: rgba(200,169,110,0.12); color: var(--accent); border: 1px solid rgba(200,169,110,0.2); }
+  .badge-pending { background: rgba(255,255,255,0.06); color: var(--text-muted); border: 1px solid var(--border); }
+  /* Download card */
+  .download-card {
+    display: none; align-items: center; gap: 18px;
+    padding: 18px 22px;
+    background: rgba(200,169,110,0.06);
+    border: 1px solid rgba(200,169,110,0.2);
+    border-radius: var(--radius-sm);
+  }
+  .download-card.visible { display: flex; }
+  .dl-icon {
+    width: 42px; height: 42px; border-radius: 12px;
+    background: rgba(200,169,110,0.12);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+  }
+  .dl-info { flex: 1; }
+  .dl-title { font-size: 0.88rem; font-weight: 600; margin-bottom: 2px; }
+  .dl-sub { font-size: 0.76rem; color: var(--text-muted); }
+  /* Notifications */
+  #toast {
+    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: rgba(20,22,32,0.95);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(20px);
+    border-radius: 100px;
+    padding: 12px 24px;
+    font-size: 0.84rem; color: var(--text-primary);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    opacity: 0; transition: all 0.3s ease;
+    z-index: 9999; pointer-events: none;
+    white-space: nowrap;
+  }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  /* Footer */
+  footer {
+    margin-top: 40px;
+    border-top: 1px solid var(--border);
+    padding-top: 36px;
+    display: flex; flex-direction: column; gap: 24px;
+  }
+  .footer-inner {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    flex-wrap: wrap; gap: 24px;
+  }
+  .footer-left { display: flex; flex-direction: column; gap: 16px; }
+  .footer-logo {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.95rem; font-weight: 800;
+    letter-spacing: 0.06em;
+    color: var(--text-primary);
+  }
+  .footer-contact-label {
+    font-size: 0.73rem; font-weight: 500;
+    color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 0.1em;
+    margin-bottom: 10px;
+  }
+  .contact-links { display: flex; flex-direction: column; gap: 9px; }
+  .contact-link {
+    display: inline-flex; align-items: center; gap: 10px;
+    color: var(--text-secondary);
+    font-size: 0.84rem; text-decoration: none;
+    transition: var(--transition);
+    padding: 7px 12px; border-radius: 8px;
+    border: 1px solid transparent;
+  }
+  .contact-link:hover {
+    color: var(--text-primary);
+    background: rgba(255,255,255,0.04);
+    border-color: var(--border);
+  }
+  .contact-link svg { flex-shrink: 0; }
+  .footer-right { text-align: right; }
+  .copyright {
+    font-size: 0.72rem; font-weight: 500;
+    color: var(--text-muted);
+    letter-spacing: 0.04em; line-height: 1.7;
+  }
+  /* Canvas (hidden processing) */
+  #processCanvas { display: none; }
+  /* Responsive */
+  @media (max-width: 680px) {
+    #app { padding: 36px 16px 80px; gap: 32px; }
+    .tab-nav { grid-template-columns: repeat(2, 1fr); }
+    .ctrl-row { flex-direction: column; }
+    .footer-inner { flex-direction: column; }
+    .footer-right { text-align: left; }
+    h1 { font-size: 2rem; }
+  }
+</style>
+</head>
+<body>
+<canvas id="processCanvas"></canvas>
+<div id="app">
+
+  <!-- HEADER -->
+  <header>
+    <div class="brand-badge"><span class="dot"></span>Client-Side Processing · Zero Upload · 100% Private</div>
+    <h1>ADIL PREMIUM<br/><span class="highlight">IMAGE COMPRESSOR</span></h1>
+    <p class="header-sub">Professional-grade bulk image optimization — powered entirely by your device.</p>
+  </header>
+
+  <!-- TAB NAVIGATION -->
+  <nav class="tab-nav" id="tabNav">
+    <button class="tab-btn active" data-tab="kb">
+      <span class="tab-icon">🎯</span>KB Target Control
+    </button>
+    <button class="tab-btn" data-tab="percent">
+      <span class="tab-icon">⚡</span>Percentage Scaling
+    </button>
+    <button class="tab-btn" data-tab="pixel">
+      <span class="tab-icon">📐</span>Precise Dimensions
+    </button>
+    <button class="tab-btn" data-tab="bulk">
+      <span class="tab-icon">🗂</span>Smart Bulk Mode
+    </button>
+  </nav>
+
+  <!-- TAB PANELS -->
+
+  <!-- PANEL 1: KB TARGET -->
+  <div class="tab-panel glass active" id="panel-kb" style="padding:30px;">
+    <div class="section-label">KB Target Control</div>
+    <p style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:24px;line-height:1.6;">
+      Iteratively optimizes image quality until the output precisely fits under your defined file size threshold.
+    </p>
+    <div class="drop-zone" id="kbDrop">
+      <div class="drop-icon">🖼</div>
+      <div class="drop-title">Drop image here or click to browse</div>
+      <div class="drop-sub">JPEG · PNG · WebP · GIF — max 20MB per file</div>
+      <input type="file" id="kbFile" accept="image/*"/>
+    </div>
+    <div style="height:20px;"></div>
+    <div class="controls-grid">
+      <div class="ctrl-row">
+        <div class="field">
+          <label>Target Size (KB)</label>
+          <input type="number" id="kbTarget" value="100" min="10" max="10000" placeholder="e.g. 100"/>
+        </div>
+        <div class="field">
+          <label>Output Format</label>
+          <select id="kbFormat">
+            <option value="image/jpeg">JPEG</option>
+            <option value="image/webp">WebP</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" id="kbProcess">
+          <svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Optimize to Target
+        </button>
+      </div>
+    </div>
+    <div id="kbPreview" class="preview-panel glass" style="margin-top:20px;border-radius:12px;"></div>
+    <div id="kbDownload" class="download-card" style="margin-top:14px;"></div>
+  </div>
+
+  <!-- PANEL 2: PERCENTAGE -->
+<div class="tab-panel glass" id="panel-percent" style="padding:30px;">
+    <div class="section-label">Percentage Scaling</div>
+    <p style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:24px;line-height:1.6;">
+      Instantly scale image dimensions to 25%, 50%, or 75% while automatically preserving the original aspect ratio.
+    </p>
+    <div class="drop-zone" id="pctDrop">
+      <div class="drop-icon">📸</div>
+      <div class="drop-title">Drop image here or click to browse</div>
+      <div class="drop-sub">JPEG · PNG · WebP · GIF — max 20MB per file</div>
+      <input type="file" id="pctFile" accept="image/*"/>
+    </div>
+    <div style="height:20px;"></div>
+    <div class="section-label" style="margin-bottom:12px;">Select Scale Factor</div>
+    <div class="scale-pills" id="scalePills">
+      <button class="pill" data-scale="25">25%</button>
+      <button class="pill active" data-scale="50">50%</button>
+      <button class="pill" data-scale="75">75%</button>
+    </div>
+    <div style="height:20px;"></div>
+    <div class="ctrl-row">
+      <div class="field">
+        <label>Output Quality</label>
+        <select id="pctQuality">
+          <option value="0.95">Maximum (95%)</option>
+          <option value="0.85" selected>High (85%)</option>
+          <option value="0.70">Standard (70%)</option>
+          <option value="0.50">Compressed (50%)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Output Format</label>
+        <select id="pctFormat">
+          <option value="image/jpeg">JPEG</option>
+          <option value="image/webp">WebP</option>
+          <option value="image/png">PNG</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" id="pctProcess">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path d="M8 12l4 4 4-4M12 8v8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        Scale Image
+      </button>
+    </div>
+    <div id="pctPreview" class="preview-panel glass" style="margin-top:20px;border-radius:12px;"></div>
+    <div id="pctDownload" class="download-card" style="margin-top:14px;"></div>
+  </div>
+
+  <!-- PANEL 3: PIXEL DIMENSIONS -->
+  <div class="tab-panel glass" id="panel-pixel" style="padding:30px;">
+    <div class="section-label">Precise Pixel Dimensions</div>
+    <p style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:24px;line-height:1.6;">
+      Define exact pixel dimensions with optional aspect ratio lock to ensure pixel-perfect output.
+    </p>
+    <div class="drop-zone" id="pixDrop">
+      <div class="drop-icon">✏️</div>
+      <div class="drop-title">Drop image here or click to browse</div>
+      <div class="drop-sub">JPEG · PNG · WebP · GIF — max 20MB per file</div>
+      <input type="file" id="pixFile" accept="image/*"/>
+    </div>
+    <div style="height:20px;"></div>
+    <div class="ctrl-row" style="align-items:center;">
+      <div class="field">
+        <label>Width (px)</label>
+        <input type="number" id="pixW" value="1280" min="1" max="8000" placeholder="Width"/>
+      </div>
+      <div style="padding-bottom:2px;">
+        <div class="toggle-wrap" style="flex-direction:column;align-items:center;gap:5px;">
+          <div class="toggle on" id="aspectToggle" title="Lock aspect ratio"></div>
+          <label for="aspectToggle" style="font-size:0.7rem;color:var(--text-muted);">Lock AR</label>
+        </div>
+      </div>
+      <div class="field">
+        <label>Height (px)</label>
+        <input type="number" id="pixH" value="720" min="1" max="8000" placeholder="Height"/>
+      </div>
+      <div class="field">
+        <label>Output Format</label>
+        <select id="pixFormat">
+          <option value="image/jpeg">JPEG</option>
+          <option value="image/webp">WebP</option>
+          <option value="image/png">PNG</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Quality</label>
+        <select id="pixQuality">
+          <option value="0.95">Maximum</option>
+          <option value="0.85" selected>High</option>
+          <option value="0.70">Standard</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" id="pixProcess">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" stroke-width="2"/><path d="M9 9h6v6H9z" fill="currentColor"/></svg>
+        Resize Image
+      </button>
+    </div>
+    <div id="pixPreview" class="preview-panel glass" style="margin-top:20px;border-radius:12px;"></div>
+    <div id="pixDownload" class="download-card" style="margin-top:14px;"></div>
+  </div>
+
+  <!-- PANEL 4: BULK -->
+  <div class="tab-panel glass" id="panel-bulk" style="padding:30px;">
+    <div class="section-label">Smart Bulk Processing</div>
+    <p style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:24px;line-height:1.6;">
+      Process up to 10 images simultaneously. Each file is individually optimized and made available for instant download.
+    </p>
+    <div class="drop-zone" id="bulkDrop">
+      <div class="drop-icon">📦</div>
+      <div class="drop-title">Drop up to 10 images or click to browse</div>
+      <div class="drop-sub">JPEG · PNG · WebP · GIF — Sequential batch processing</div>
+      <input type="file" id="bulkFiles" accept="image/*" multiple/>
+    </div>
+    <div style="height:20px;"></div>
+    <div class="ctrl-row">
+      <div class="field">
+        <label>Compression Quality</label>
+        <select id="bulkQuality">
+          <option value="0.95">Maximum (95%)</option>
+          <option value="0.85" selected>High (85%)</option>
+          <option value="0.70">Standard (70%)</option>
+          <option value="0.50">Compressed (50%)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Max Width (px, 0 = keep)</label>
+        <input type="number" id="bulkMaxW" value="0" min="0" max="8000" placeholder="0 = original"/>
+      </div>
+      <div class="field">
+        <label>Output Format</label>
+        <select id="bulkFormat">
+          <option value="image/jpeg">JPEG</option>
+          <option value="image/webp">WebP</option>
+          <option value="image/png">PNG</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" id="bulkProcess">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Process Batch
+      </button>
+    </div>
+    <!-- Progress -->
+    <div id="bulkProgress" style="display:none;margin-top:20px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <span style="font-size:0.8rem;color:var(--text-secondary);" id="bulkProgressLabel">Processing…</span>
+        <span style="font-size:0.8rem;color:var(--accent);" id="bulkProgressPct">0%</span>
+      </div>
+      <div class="progress-bar-wrap"><div class="progress-bar" id="bulkBar"></div></div>
+    </div>
+    <!-- Table -->
+    <div id="bulkResults" style="display:none;margin-top:24px;">
+      <div class="section-label" style="margin-bottom:14px;">Processing Results</div>
+      <div class="bulk-table-wrap glass" style="border-radius:12px;overflow:hidden;">
+        <table id="bulkTable">
+          <thead>
+            <tr>
+              <th>File Name</th>
+              <th>Original</th>
+              <th>Compressed</th>
+              <th>Saved</th>
+              <th>Status</th>
+              <th>Download</th>
+            </tr>
+          </thead>
+          <tbody id="bulkTbody"></tbody>
+        </table>
+      </div>
+      <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="btn btn-primary" id="bulkDownloadAll">
+          <svg width="13" height="13" fill="none" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Download All Files
+        </button>
+        <button class="btn btn-secondary" id="bulkClear">Clear Results</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end #app -->
+
+<!-- FOOTER -->
+<footer style="max-width:1100px;margin:0 auto;padding:0 28px 60px;position:relative;z-index:1;">
+  <div class="footer-inner">
+    <div class="footer-left">
+      <div class="footer-logo">ADIL PREMIUM IMAGE COMPRESSOR</div>
+      <div>
+        <div class="footer-contact-label">For any query contact:</div>
+        <div class="contact-links">
+          <!-- Gmail -->
+          <a class="contact-link" href="mailto:mdadilh314@gmail.com">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="#EA4335" stroke-width="1.6" fill="none"/>
+              <path d="M22 6L12 13 2 6" stroke="#EA4335" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+            mdadilh314@gmail.com
+          </a>
+          <!-- Instagram -->
+          <a class="contact-link" href="https://www.instagram.com/adil_bhai888?igsh=MXQ2NXg2dDBreHgwZQ==" target="_blank" rel="noopener">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="2" y="2" width="20" height="20" rx="5" stroke="url(#igGrad)" stroke-width="1.7" fill="none"/>
+              <circle cx="12" cy="12" r="4.5" stroke="url(#igGrad)" stroke-width="1.6" fill="none"/>
+              <circle cx="17.5" cy="6.5" r="1" fill="url(#igGrad)"/>
+              <defs>
+                <linearGradient id="igGrad" x1="2" y1="22" x2="22" y2="2" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#FFDC80"/>
+                  <stop offset="0.4" stop-color="#F77737"/>
+                  <stop offset="0.7" stop-color="#C13584"/>
+                  <stop offset="1" stop-color="#833AB4"/>
+                </linearGradient>
+              </defs>
+            </svg>
+            @adil_bhai888
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-right">
+      <div class="copyright">
+        ©ADILKB/MBWEB2026<br/>ALL RIGHTS RESERVED
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+// ─── UTILITIES ───────────────────────────────────────────────────────────────
+const canvas = document.getElementById('processCanvas');
+const ctx = canvas.getContext('2d');
+const $ = id => document.getElementById(id);
+const fmtKB = b => b < 1024 ? b + ' B' : b < 1048576 ? (b/1024).toFixed(1) + ' KB' : (b/1048576).toFixed(2) + ' MB';
+const fmtExt = fmt => fmt === 'image/jpeg' ? 'jpg' : fmt === 'image/webp' ? 'webp' : 'png';
+
+let toastTimer;
+function toast(msg, dur=3000) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), dur);
+}
+
+function loadImg(file) {
+  return new Promise((res, rej) => {
+    if (!file || !file.type.startsWith('image/')) { rej('Invalid file type.'); return; }
+    if (file.size > 20*1024*1024) { rej('File exceeds 20MB limit.'); return; }
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => { URL.revokeObjectURL(url); res(img); };
+    img.onerror = () => rej('Failed to load image.');
+    img.src = url;
+  });
+}
+
+function drawToCanvas(img, w, h) {
+  canvas.width = w; canvas.height = h;
+  ctx.clearRect(0, 0, w, h);
+  ctx.drawImage(img, 0, 0, w, h);
+}
+
+function canvasToBlob(fmt, quality) {
+  return new Promise(res => canvas.toBlob(res, fmt, quality));
+}
+
+function blobToDataURL(blob) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = e => res(e.target.result);
+    r.onerror = rej;
+    r.readAsDataURL(blob);
+  });
+}
+
+function triggerDownload(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 1000);
+}
+
+function buildPreview(panelId, dlId, file, blob, w, h, origSize) {
+  const savedBytes = origSize - blob.size;
+  const savedPct = ((savedBytes / origSize) * 100).toFixed(1);
+  const panel = $(panelId);
+  panel.innerHTML = `
+    <div class="preview-strip">
+      <div class="preview-thumb"><img src="${URL.createObjectURL(blob)}" alt="Preview"/></div>
+      <div class="preview-meta">
+        <div class="meta-name">${file.name}</div>
+        <div class="meta-stats">
+          <div class="stat"><div class="stat-label">Dimensions</div><div class="stat-val gold">${w} × ${h}</div></div>
+          <div class="stat"><div class="stat-label">Original</div><div class="stat-val">${fmtKB(origSize)}</div></div>
+          <div class="stat"><div class="stat-label">Compressed</div><div class="stat-val green">${fmtKB(blob.size)}</div></div>
+          <div class="stat"><div class="stat-label">Space Saved</div><div class="stat-val green">↓ ${savedPct}%</div></div>
+        </div>
+      </div>
+    </div>`;
+  panel.classList.add('visible');
+
+  const dl = $(dlId);
+  dl.innerHTML = `
+    <div class="dl-icon">⬇️</div>
+    <div class="dl-info">
+      <div class="dl-title">Ready to download</div>
+      <div class="dl-sub">${fmtKB(blob.size)} · ${w}×${h}px</div>
+    </div>
+    <button class="btn btn-primary" id="${dlId}Btn">Save File</button>`;
+  dl.classList.add('visible');
+  $(`${dlId}Btn`).onclick = () => { triggerDownload(blob, 'adil_' + file.name.replace(/\.[^.]+$/, '') + '.' + fmtExt(blob.type)); toast('✅ File saved successfully'); };
+}
+
+// ─── TABS ─────────────────────────────────────────────────────────────────────
+document.getElementById('tabNav').addEventListener('click', e => {
+  const btn = e.target.closest('.tab-btn');
+  if (!btn) return;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  $('panel-' + btn.dataset.tab).classList.add('active');
+});
+
+// ─── DROP ZONES ───────────────────────────────────────────────────────────────
+function setupDrop(zoneId, inputId, cb) {
+  const zone = $(zoneId), input = $(inputId);
+  zone.addEventListener('click', () => input.click());
+  input.addEventListener('change', () => { if (input.files[0]) cb(input.files[0]); input.value = ''; });
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault(); zone.classList.remove('dragover');
+    const file = e.dataTransfer.files[0];
+    if (file) cb(file);
+  });
+}
+
+// ─── 1. KB TARGET ─────────────────────────────────────────────────────────────
+let kbCurrentFile = null;
+setupDrop('kbDrop', 'kbFile', f => {
+  kbCurrentFile = f;
+  toast('📎 ' + f.name + ' loaded');
+});
+
+$('kbProcess').addEventListener('click', async () => {
+  if (!kbCurrentFile) { toast('⚠️ Please select an image first'); return; }
+  const targetKB = parseInt($('kbTarget').value) || 100;
+  const fmt = $('kbFormat').value;
+  const btn = $('kbProcess'); btn.disabled = true; btn.textContent = 'Optimizing…';
+  try {
+    const img = await loadImg(kbCurrentFile);
+    const targetBytes = targetKB * 1024;
+    let lo = 0.05, hi = 1.0, blob, iter = 0;
+    drawToCanvas(img, img.naturalWidth, img.naturalHeight);
+    // Iterative binary search on quality
+    do {
+      const mid = (lo + hi) / 2;
+      blob = await canvasToBlob(fmt, mid);
+      if (blob.size > targetBytes) hi = mid - 0.01;
+      else lo = mid + 0.01;
+      iter++;
+    } while (Math.abs(blob.size - targetBytes) > targetBytes * 0.03 && iter < 22 && lo < hi);
+    // If still too large, also scale down
+    if (blob.size > targetBytes) {
+      let scale = 1;
+      while (blob.size > targetBytes && scale > 0.1) {
+        scale -= 0.1;
+        const nw = Math.round(img.naturalWidth * scale);
+        const nh = Math.round(img.naturalHeight * scale);
+        drawToCanvas(img, nw, nh);
+        blob = await canvasToBlob(fmt, 0.7);
+      }
+    }
+    buildPreview('kbPreview', 'kbDownload', kbCurrentFile, blob, canvas.width, canvas.height, kbCurrentFile.size);
+    toast('✅ Optimized to ' + fmtKB(blob.size));
+  } catch (e) { toast('❌ ' + e); }
+  btn.disabled = false; btn.innerHTML = '<svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Optimize to Target';
+});
+
+// ─── 2. PERCENTAGE ─────────────────────────────────────────────────────────────
+let pctCurrentFile = null, selectedScale = 50;
+setupDrop('pctDrop', 'pctFile', f => { pctCurrentFile = f; toast('📎 ' + f.name + ' loaded'); });
+
+document.getElementById('scalePills').addEventListener('click', e => {
+  const pill = e.target.closest('.pill');
+  if (!pill) return;
+  document.querySelectorAll('#scalePills .pill').forEach(p => p.classList.remove('active'));
+  pill.classList.add('active');
+  selectedScale = parseInt(pill.dataset.scale);
+});
+
+$('pctProcess').addEventListener('click', async () => {
+  if (!pctCurrentFile) { toast('⚠️ Please select an image first'); return; }
+  const btn = $('pctProcess'); btn.disabled = true; btn.textContent = 'Scaling…';
+  try {
+    const img = await loadImg(pctCurrentFile);
+    const nw = Math.round(img.naturalWidth * selectedScale / 100);
+    const nh = Math.round(img.naturalHeight * selectedScale / 100);
+    drawToCanvas(img, nw, nh);
+    const fmt = $('pctFormat').value, q = parseFloat($('pctQuality').value);
+    const blob = await canvasToBlob(fmt, q);
+    buildPreview('pctPreview', 'pctDownload', pctCurrentFile, blob, nw, nh, pctCurrentFile.size);
+    toast('✅ Scaled to ' + selectedScale + '%');
+  } catch (e) { toast('❌ ' + e); }
+  btn.disabled = false; btn.innerHTML = '<svg width="14" height="14" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path d="M8 12l4 4 4-4M12 8v8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> Scale Image';
+});
+
+// ─── 3. PIXEL DIMENSIONS ─────────────────────────────────────────────────────
+let pixCurrentFile = null, aspectLocked = true, origRatio = 1;
+const pixWInput = $('pixW'), pixHInput = $('pixH'), aspectToggle = $('aspectToggle');
+
+setupDrop('pixDrop', 'pixFile', f => {
+  pixCurrentFile = f;
+  loadImg(f).then(img => {
+    origRatio = img.naturalWidth / img.naturalHeight;
+    pixWInput.value = img.naturalWidth;
+    pixHInput.value = img.naturalHeight;
+    toast('📎 ' + f.name + ' — ' + img.naturalWidth + '×' + img.naturalHeight + 'px');
+  }).catch(e => toast('❌ ' + e));
+});
+
+aspectToggle.addEventListener('click', () => {
+  aspectLocked = !aspectLocked;
+  aspectToggle.classList.toggle('on', aspectLocked);
+});
+
+pixWInput.addEventListener('input', () => {
+  if (aspectLocked && pixCurrentFile) pixHInput.value = Math.round(parseInt(pixWInput.value) / origRatio) || '';
+});
+pixHInput.addEventListener('input', () => {
+  if (aspectLocked && pixCurrentFile) pixWInput.value = Math.round(parseInt(pixHInput.value) * origRatio) || '';
+});
+
+$('pixProcess').addEventListener('click', async () => {
+  if (!pixCurrentFile) { toast('⚠️ Please select an image first'); return; }
+  const nw = parseInt(pixWInput.value), nh = parseInt(pixHInput.value);
+  if (!nw || !nh || nw < 1 || nh < 1) { toast('⚠️ Enter valid dimensions'); return; }
+  const btn = $('pixProcess'); btn.disabled = true; btn.textContent = 'Resizing…';
+  try {
+    const img = await loadImg(pixCurrentFile);
+    drawToCanvas(img, nw, nh);
+    const fmt = $('pixFormat').value, q = parseFloat($('pixQuality').value);
+    const blob = await canvasToBlob(fmt, q);
+    buildPreview('pixPreview', 'pixDownload', pixCurrentFile, blob, nw, nh, pixCurrentFile.size);
+    toast('✅ Resized to ' + nw + '×' + nh);
+  } catch (e) { toast('❌ ' + e); }
+  btn.disabled = false; btn.innerHTML = '<svg width="14" height="14" fill="none" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" stroke-width="2"/><path d="M9 9h6v6H9z" fill="currentColor"/></svg> Resize Image';
+});
+
+// ─── 4. BULK ─────────────────────────────────────────────────────────────────
+let bulkFiles = [], bulkBlobs = [];
+const bulkZone = $('bulkDrop'), bulkInput = $('bulkFiles');
+bulkZone.addEventListener('click', () => bulkInput.click());
+bulkZone.addEventListener('dragover', e => { e.preventDefault(); bulkZone.classList.add('dragover'); });
+bulkZone.addEventListener('dragleave', () => bulkZone.classList.remove('dragover'));
+bulkZone.addEventListener('drop', e => {
+  e.preventDefault(); bulkZone.classList.remove('dragover');
+  handleBulkFiles(Array.from(e.dataTransfer.files));
+});
+bulkInput.addEventListener('change', () => { handleBulkFiles(Array.from(bulkInput.files)); bulkInput.value = ''; });
+
+function handleBulkFiles(files) {
+  const imgs = files.filter(f => f.type.startsWith('image/')).slice(0, 10);
+  if (imgs.length === 0) { toast('⚠️ No valid image files found'); return; }
+  bulkFiles = imgs;
+  toast('📦 ' + imgs.length + ' image' + (imgs.length > 1 ? 's' : '') + ' queued for processing');
+  const zone = $('bulkDrop');
+  zone.querySelector('.drop-title').textContent = imgs.length + ' file' + (imgs.length>1?'s':'') + ' selected — ready to process';
+}
+
+$('bulkProcess').addEventListener('click', async () => {
+  if (bulkFiles.length === 0) { toast('⚠️ Please select images first'); return; }
+  const btn = $('bulkProcess'); btn.disabled = true;
+  const fmt = $('bulkFormat').value;
+  const q = parseFloat($('bulkQuality').value);
+  const maxW = parseInt($('bulkMaxW').value) || 0;
+  bulkBlobs = [];
+
+  $('bulkProgress').style.display = 'block';
+  $('bulkResults').style.display = 'none';
+  $('bulkTbody').innerHTML = '';
+
+  for (let i = 0; i < bulkFiles.length; i++) {
+    const f = bulkFiles[i];
+    const pct = Math.round((i / bulkFiles.length) * 100);
+    $('bulkBar').style.width = pct + '%';
+    $('bulkProgressPct').textContent = pct + '%';
+    $('bulkProgressLabel').textContent = 'Processing ' + (i+1) + ' of ' + bulkFiles.length + ': ' + f.name;
+
+    try {
+      const img = await loadImg(f);
+      let nw = img.naturalWidth, nh = img.naturalHeight;
+      if (maxW > 0 && nw > maxW) { nh = Math.round(nh * (maxW / nw)); nw = maxW; }
+      drawToCanvas(img, nw, nh);
+      const blob = await canvasToBlob(fmt, q);
+      bulkBlobs.push({ blob, name: f.name.replace(/\.[^.]+$/, '') + '_adil.' + fmtExt(fmt) });
+      const saved = ((1 - blob.size / f.size) * 100).toFixed(1);
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td style="font-weight:500;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${f.name}</td>
+        <td>${fmtKB(f.size)}</td>
+        <td style="color:var(--success)">${fmtKB(blob.size)}</td>
+        <td><span class="badge badge-success">↓ ${saved}%</span></td>
+        <td><span class="badge badge-gold">✓ Done</span></td>
+        <td><button class="btn btn-secondary" style="padding:6px 14px;font-size:0.78rem;" data-idx="${bulkBlobs.length-1}">Save</button></td>`;
+      $('bulkTbody').appendChild(tr);
+    } catch(e) {
+      bulkBlobs.push(null);
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${f.name}</td><td>${fmtKB(f.size)}</td><td>—</td><td>—</td><td><span class="badge badge-pending">Failed</span></td><td>—</td>`;
+      $('bulkTbody').appendChild(tr);
+    }
+  }
+
+  $('bulkBar').style.width = '100%';
+  $('bulkProgressPct').textContent = '100%';
+  $('bulkProgressLabel').textContent = 'Processing complete';
+  setTimeout(() => $('bulkProgress').style.display = 'none', 1200);
+  $('bulkResults').style.display = 'block';
+  btn.disabled = false;
+  toast('✅ Batch complete — ' + bulkFiles.length + ' files processed');
+});
+
+$('bulkTbody').addEventListener('click', e => {
+  const btn = e.target.closest('[data-idx]');
+  if (!btn) return;
+  const entry = bulkBlobs[parseInt(btn.dataset.idx)];
+  if (entry) { triggerDownload(entry.blob, entry.name); toast('✅ Saved ' + entry.name); }
+});
+
+$('bulkDownloadAll').addEventListener('click', async () => {
+  const valid = bulkBlobs.filter(Boolean);
+  if (!valid.length) return;
+  for (let i = 0; i < valid.length; i++) {
+    await new Promise(r => setTimeout(r, 350 * i));
+    triggerDownload(valid[i].blob, valid[i].name);
+  }
+  toast('✅ All files saved');
+});
+
+$('bulkClear').addEventListener('click', () => {
+  bulkFiles = []; bulkBlobs = [];
+  $('bulkResults').style.display = 'none';
+  $('bulkTbody').innerHTML = '';
+  $('bulkDrop').querySelector('.drop-title').textContent = 'Drop up to 10 images or click to browse';
+  toast('🗑 Results cleared');
+});
+</script>
+</body>
+</html>
